@@ -6,8 +6,9 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    strictPort: true, // Fail if port is already in use
-    open: false, // Don't auto-open browser
+    strictPort: true,
+    open: false,
+    cors: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -16,13 +17,13 @@ export default defineConfig({
         timeout: 10000,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
-            console.log('Proxy error:', err.message);
+            console.log('❌ Proxy error:', err.message);
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log(`Proxying ${req.method} ${req.url} to target`);
+            console.log(`🔄 Proxying ${req.method} ${req.url}`);
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log(`Received ${proxyRes.statusCode} from target for ${req.method} ${req.url}`);
+            console.log(`✅ ${proxyRes.statusCode} for ${req.method} ${req.url}`);
           });
         },
       },

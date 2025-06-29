@@ -132,10 +132,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
-  console.log(`🚀 VoyageHub Server running on port ${PORT}`);
-  console.log(`📡 API accessible at: http://localhost:${PORT}`);
-  console.log(`🌐 Frontend should be at: http://localhost:5173`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  console.log(`\n🚀 VoyageHub API Server`);
+  console.log(`📡 Running on: http://localhost:${PORT}`);
+  console.log(`🌐 Frontend: http://localhost:5173`);
+  console.log(`📊 Health: http://localhost:${PORT}/health`);
+  console.log(`⚡ Ready for connections!\n`);
 });
 
 // Handle graceful shutdown
