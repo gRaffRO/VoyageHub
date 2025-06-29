@@ -61,6 +61,25 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'VoyageHub API Server',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth/*',
+      vacations: '/api/vacations/*',
+      tasks: '/api/tasks/*',
+      budget: '/api/budget/*',
+      documents: '/api/documents/*',
+      notifications: '/api/notifications/*'
+    },
+    frontend: process.env.CLIENT_URL || 'http://localhost:5173'
+  });
+});
+
 // Socket.IO for real-time features
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
