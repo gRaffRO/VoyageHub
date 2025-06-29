@@ -22,7 +22,8 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/budget/${vacationId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/budget/${vacationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -48,7 +49,8 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/budget/${vacationId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/budget/${vacationId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +82,8 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/budget/${vacationId}/expenses`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/budget/${vacationId}/expenses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +126,8 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/budget/expenses/${expenseId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/budget/expenses/${expenseId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +163,8 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/budget/expenses/${expenseId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/budget/expenses/${expenseId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

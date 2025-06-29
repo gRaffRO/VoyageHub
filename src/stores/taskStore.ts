@@ -11,7 +11,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/tasks?vacationId=${vacationId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/tasks?vacationId=${vacationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -34,7 +35,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch('http://localhost:3001/api/tasks', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +67,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/tasks/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/tasks/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +99,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/tasks/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/tasks/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

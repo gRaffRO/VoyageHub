@@ -21,7 +21,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/documents?vacationId=${vacationId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/documents?vacationId=${vacationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -53,7 +54,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         formData.append('expirationDate', data.expirationDate);
       }
 
-      const response = await fetch('http://localhost:3001/api/documents/upload', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/documents/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -83,7 +85,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/documents/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/documents/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +117,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/documents/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/documents/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

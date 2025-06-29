@@ -23,7 +23,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch('http://localhost:3001/api/notifications', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -46,7 +47,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   markAsRead: async (id: string) => {
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/notifications/${id}/read`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/notifications/${id}/read`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -71,7 +73,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   markAllAsRead: async () => {
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch('http://localhost:3001/api/notifications/read-all', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/notifications/read-all`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -94,7 +97,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   deleteNotification: async (id: string) => {
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/notifications/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/notifications/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -122,7 +126,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   addBudgetAlert: async (vacationId: string, percentage: number) => {
     try {
       const { token, user } = useAuthStore.getState();
-      const response = await fetch('http://localhost:3001/api/notifications', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/notifications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

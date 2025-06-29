@@ -17,7 +17,8 @@ export const useVacationStore = create<VacationState>((set, get) => ({
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/vacations', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/vacations`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -40,7 +41,8 @@ export const useVacationStore = create<VacationState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch('http://localhost:3001/api/vacations', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/vacations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +73,8 @@ export const useVacationStore = create<VacationState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/vacations/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/vacations/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +108,8 @@ export const useVacationStore = create<VacationState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
-      const response = await fetch(`http://localhost:3001/api/vacations/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/vacations/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
