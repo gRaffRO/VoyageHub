@@ -4,6 +4,8 @@ import React from 'react';
 import App from './App.tsx';
 import './index.css';
 
+console.log('🚀 [Main] VoyageHub main.tsx loaded');
+
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -15,15 +17,17 @@ class ErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error) {
+    console.error('🚨 [ErrorBoundary] Error caught:', error);
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('App Error:', error, errorInfo);
+    console.error('🚨 [ErrorBoundary] Component error:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
+      console.log('🚨 [ErrorBoundary] Rendering error UI');
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
           <div className="glass-card p-8 rounded-3xl text-center max-w-md">
@@ -51,27 +55,33 @@ class ErrorBoundary extends React.Component<
 
 // Remove loading fallback once React takes over
 const removeLoadingFallback = () => {
+  console.log('🧹 [Main] Removing loading fallback...');
   const fallback = document.querySelector('.loading-fallback');
   if (fallback) {
     fallback.style.opacity = '0';
     setTimeout(() => {
       fallback.remove();
+      console.log('✅ [Main] Loading fallback removed');
     }, 300);
+  } else {
+    console.log('ℹ️ [Main] No loading fallback found to remove');
   }
 };
 
 // Initialize app
 const initializeApp = () => {
   try {
-    console.log('🚀 Initializing VoyageHub...');
+    console.log('🚀 [Main] Initializing VoyageHub...');
     
     const rootElement = document.getElementById('root');
     if (!rootElement) {
       throw new Error('Root element not found');
     }
 
+    console.log('✅ [Main] Root element found, creating React root...');
     const root = createRoot(rootElement);
     
+    console.log('🎯 [Main] Rendering React app...');
     root.render(
       <StrictMode>
         <ErrorBoundary>
@@ -80,13 +90,13 @@ const initializeApp = () => {
       </StrictMode>
     );
 
-    console.log('✅ React app rendered successfully');
+    console.log('✅ [Main] React app rendered successfully');
     
     // Remove loading fallback after React has taken over
     setTimeout(removeLoadingFallback, 100);
     
   } catch (error) {
-    console.error('❌ Failed to initialize app:', error);
+    console.error('❌ [Main] Failed to initialize app:', error);
     
     // Show error in the loading fallback
     const fallback = document.querySelector('.loading-fallback');
@@ -114,7 +124,9 @@ const initializeApp = () => {
 
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
+  console.log('⏳ [Main] DOM still loading, waiting...');
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
+  console.log('✅ [Main] DOM ready, initializing immediately');
   initializeApp();
 }

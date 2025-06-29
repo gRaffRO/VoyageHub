@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    strictPort: false, // Allow fallback ports if 5173 is busy
+    strictPort: false,
     open: false,
     cors: true,
     proxy: {
@@ -17,13 +17,13 @@ export default defineConfig({
         timeout: 10000,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
-            console.log('❌ Proxy error:', err.message);
+            console.log('❌ [Vite] Proxy error:', err.message);
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log(`🔄 Proxying ${req.method} ${req.url} to target`);
+            console.log(`🔄 [Vite] Proxying ${req.method} ${req.url} to target`);
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log(`✅ ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+            console.log(`✅ [Vite] ${proxyRes.statusCode} for ${req.method} ${req.url}`);
           });
         },
       },
@@ -34,10 +34,15 @@ export default defineConfig({
     host: '0.0.0.0',
   },
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    include: ['lucide-react'],
+    exclude: [],
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
+  },
+  define: {
+    // Ensure environment variables are available
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api'),
   },
 });

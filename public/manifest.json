@@ -9,15 +9,15 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%232563EB' rx='24'/><path d='M96 48c-8 0-16 4-20 12l-32 56c-4 8 0 16 8 16h88c8 0 12-8 8-16l-32-56c-4-8-12-12-20-12z' fill='white'/><circle cx='96' cy='144' r='12' fill='white'/></svg>",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563EB' rx='64'/><path d='M256 128c-21.3 0-42.7 10.7-53.3 32l-85.3 149.3c-10.7 21.3 0 42.7 21.3 42.7h234.7c21.3 0 32-21.3 21.3-42.7L309.3 160c-10.7-21.3-32-32-53.3-32z' fill='white'/><circle cx='256' cy='384' r='32' fill='white'/></svg>",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],

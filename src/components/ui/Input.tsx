@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { DivideIcon as LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import { gsap } from 'gsap';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
