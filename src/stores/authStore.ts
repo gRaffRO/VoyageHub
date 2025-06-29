@@ -8,24 +8,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
 
   initializeAuth: async () => {
-    set({ isLoading: true });
+    try {
+      set({ isLoading: true });
     
-    const token = localStorage.getItem('voyagehub_token');
-    const userData = localStorage.getItem('voyagehub_user');
+      const token = localStorage.getItem('voyagehub_token');
+      const userData = localStorage.getItem('voyagehub_user');
     
-    if (token && userData) {
-      try {
-        const user = JSON.parse(userData);
-        set({
-          user,
-          token,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } catch (error) {
-        // Clear invalid data
-        localStorage.removeItem('voyagehub_token');
-        localStorage.removeItem('voyagehub_user');
+      if (token && userData) {
+        try {
+          const user = JSON.parse(userData);
+          set({
+            user,
+            token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error('Error parsing stored user data:', error);
+          // Clear invalid data
+          localStorage.removeItem('voyagehub_token');
+          localStorage.removeItem('voyagehub_user');
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        }
+      } else {
         set({
           user: null,
           token: null,
@@ -33,7 +43,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           isLoading: false,
         });
       }
-    } else {
+    } catch (error) {
+      console.error('Error initializing auth:', error);
       set({
         user: null,
         token: null,

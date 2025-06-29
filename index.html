@@ -43,6 +43,7 @@
         justify-content: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         z-index: 9999;
+        transition: opacity 0.3s ease-out;
       }
       
       .loading-spinner {
@@ -52,6 +53,15 @@
         border-top: 4px solid white;
         border-radius: 50%;
         animation: spin 1s linear infinite;
+      }
+      
+      .glass-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 
+          0 8px 32px 0 rgba(31, 38, 135, 0.37),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
       }
       
       @keyframes spin {
@@ -64,7 +74,11 @@
     <div id="root">
       <!-- Loading fallback while JS loads -->
       <div class="loading-fallback">
-        <div class="loading-spinner"></div>
+        <div class="glass-card" style="padding: 2rem; border-radius: 1.5rem; text-align: center;">
+          <div class="loading-spinner" style="margin: 0 auto 1rem;"></div>
+          <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 1rem;">Loading VoyageHub...</p>
+          <p style="color: rgba(255,255,255,0.5); margin: 0.5rem 0 0; font-size: 0.875rem;">Please wait while we prepare your travel planning experience</p>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
