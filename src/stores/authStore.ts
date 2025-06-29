@@ -4,10 +4,12 @@ import { AuthState, User, RegisterData } from '../types';
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
-  isAuthenticated: false,
+  isAuthenticated: null, // null = loading, false = not authenticated, true = authenticated
   isLoading: false,
 
   initializeAuth: async () => {
+    set({ isLoading: true });
+    
     const token = localStorage.getItem('voyagehub_token');
     const userData = localStorage.getItem('voyagehub_user');
     
@@ -18,12 +20,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user,
           token,
           isAuthenticated: true,
+          isLoading: false,
         });
       } catch (error) {
         // Clear invalid data
         localStorage.removeItem('voyagehub_token');
         localStorage.removeItem('voyagehub_user');
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
       }
+    } else {
+      set({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
     }
   },
 

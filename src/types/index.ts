@@ -154,7 +154,7 @@ export interface Notification {
 export interface AuthState {
   user: User | null;
   token: string | null;
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | null; // null = loading, false = not authenticated, true = authenticated
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
