@@ -15,30 +15,24 @@ import { Sidebar } from './components/layout/Sidebar';
 import { gsap } from 'gsap';
 
 function App() {
-  const { isAuthenticated, initializeAuth } = useAuthStore();
+  const { isAuthenticated, isLoading, initializeAuth } = useAuthStore();
   const appRef = useRef<HTMLDivElement>(null);
-  const [initError, setInitError] = React.useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = React.useState(false);
 
+  // Initialize auth only when isAuthenticated is null (initial state)
   useEffect(() => {
-    const initApp = async () => {
-      try {
-        console.log('🔄 Initializing authentication...');
-        await initializeAuth();
+    if (isAuthenticated === null) {
+      console.log('🔄 Initializing authentication...');
+      initializeAuth().then(() => {
         console.log('✅ Authentication initialized');
-        setIsInitialized(true);
-      } catch (error) {
+      }).catch((error) => {
         console.error('❌ Failed to initialize auth:', error);
-        setInitError('Failed to initialize application. Please refresh the page.');
-        setIsInitialized(true);
-      }
-    };
-    
-    initApp();
-  }, [initializeAuth]);
+      });
+    }
+  }, [isAuthenticated, initializeAuth]);
 
+  // Animate app when authenticated
   useEffect(() => {
-    if (appRef.current && isAuthenticated) {
+    if (appRef.current && isAuthenticated === true) {
       gsap.fromTo(appRef.current,
         { opacity: 0 },
         { opacity: 1, duration: 0.8, ease: "power2.out" }
@@ -46,48 +40,25 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // Show loading state while initializing
-  if (!isInitialized) {
+  // Show loading state while initializing or during auth operations
+  if (isAuthenticated === null || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-card p-8 rounded-3xl text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white/60">Initializing VoyageHub...</p>
-          <p className="text-white/40 text-sm mt-2">Setting up your account</p>
+          <p className="text-white/80 text-lg font-medium">Loading VoyageHub...</p>
+          <p className="text-white/60 text-sm mt-2">Preparing your travel planning experience</p>
         </div>
       </div>
     );
   }
 
-  // Show error state if initialization failed
-  if (initError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-card p-8 rounded-3xl text-center max-w-md">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-400 text-2xl">⚠️</span>
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Initialization Error</h2>
-          <p className="text-white/70 mb-4">{initError}</p>
-          <button 
-            onClick={() => {
-              setInitError(null);
-              setIsInitialized(false);
-              window.location.reload();
-            }}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Refresh Page
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
+  // Show auth page if not authenticated
+  if (isAuthenticated === false) {
     return <AuthPage />;
   }
 
+  // Show main app if authenticated
   return (
     <Router>
       <div ref={appRef} className="min-h-screen">
