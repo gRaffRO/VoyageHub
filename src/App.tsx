@@ -1,11 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
-import { useVacationStore } from './stores/vacationStore';
-import { useTaskStore } from './stores/taskStore';
-import { useBudgetStore } from './stores/budgetStore';
-import { useDocumentStore } from './stores/documentStore';
-import { useNotificationStore } from './stores/notificationStore';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { VacationsPage } from './pages/VacationsPage';
@@ -23,23 +18,19 @@ function App() {
   const { isAuthenticated, initializeAuth } = useAuthStore();
   const appRef = useRef<HTMLDivElement>(null);
   const [initError, setInitError] = React.useState<string | null>(null);
-  
-  // Initialize all stores
-  const { fetchVacations } = useVacationStore();
-  const { fetchTasks } = useTaskStore();
-  const { fetchBudget } = useBudgetStore();
-  const { fetchDocuments } = useDocumentStore();
-  const { fetchNotifications } = useNotificationStore();
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
   useEffect(() => {
     const initApp = async () => {
       try {
-        console.log('Initializing app...');
+        console.log('🔄 Initializing authentication...');
         await initializeAuth();
-        console.log('Auth initialized, isAuthenticated:', useAuthStore.getState().isAuthenticated);
+        console.log('✅ Authentication initialized');
+        setIsInitialized(true);
       } catch (error) {
-        console.error('Failed to initialize auth:', error);
+        console.error('❌ Failed to initialize auth:', error);
         setInitError('Failed to initialize application. Please refresh the page.');
+        setIsInitialized(true);
       }
     };
     
@@ -56,7 +47,7 @@ function App() {
   }, [isAuthenticated]);
 
   // Show loading state while initializing
-  if (isAuthenticated === null && !initError) {
+  if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-card p-8 rounded-3xl text-center">
@@ -81,6 +72,7 @@ function App() {
           <button 
             onClick={() => {
               setInitError(null);
+              setIsInitialized(false);
               window.location.reload();
             }}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"

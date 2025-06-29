@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    strictPort: true,
+    strictPort: false, // Allow fallback ports if 5173 is busy
     open: false,
     cors: true,
     proxy: {
@@ -15,7 +15,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         timeout: 10000,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('❌ Proxy error:', err.message);
@@ -40,9 +39,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-  },
-  define: {
-    // Ensure environment variables are available
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api'),
   },
 });

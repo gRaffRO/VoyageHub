@@ -53,7 +53,6 @@ class ErrorBoundary extends React.Component<
 const removeLoadingFallback = () => {
   const fallback = document.querySelector('.loading-fallback');
   if (fallback) {
-    // Add fade out animation
     fallback.style.opacity = '0';
     setTimeout(() => {
       fallback.remove();
@@ -64,7 +63,7 @@ const removeLoadingFallback = () => {
 // Initialize app
 const initializeApp = () => {
   try {
-    console.log('Initializing VoyageHub...');
+    console.log('🚀 Initializing VoyageHub...');
     
     const rootElement = document.getElementById('root');
     if (!rootElement) {
@@ -81,13 +80,13 @@ const initializeApp = () => {
       </StrictMode>
     );
 
-    console.log('React app rendered successfully');
+    console.log('✅ React app rendered successfully');
     
-    // Remove loading fallback after a short delay to ensure React has taken over
-    setTimeout(removeLoadingFallback, 500);
+    // Remove loading fallback after React has taken over
+    setTimeout(removeLoadingFallback, 100);
     
   } catch (error) {
-    console.error('Failed to initialize app:', error);
+    console.error('❌ Failed to initialize app:', error);
     
     // Show error in the loading fallback
     const fallback = document.querySelector('.loading-fallback');
