@@ -4,15 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently --kill-others \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "concurrently --kill-others --names \"CLIENT,SERVER\" --prefix-colors \"blue,green\" \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "vite",
-    "dev:server": "tsx watch --clear-screen=false server/index.ts",
+    "dev:server": "tsx watch server/index.ts",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "npm run dev",
-    "server": "npm run dev:server",
-    "client": "npm run dev:client"
+    "server": "tsx server/index.ts",
+    "client": "vite --port 5173 --host 0.0.0.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

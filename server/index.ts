@@ -13,24 +13,16 @@ import { documentRoutes } from './routes/documents';
 import { notificationRoutes } from './routes/notifications';
 import { authenticateToken } from './middleware/auth';
 
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nReceived SIGINT. Graceful shutdown...');
-  Database.close();
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.log('\nReceived SIGTERM. Graceful shutdown...');
-  Database.close();
-  process.exit(0);
-});
-
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://0.0.0.0:5173",
+      process.env.CLIENT_URL
+    ].filter(Boolean),
     methods: ["GET", "POST"]
   }
 });
@@ -53,7 +45,8 @@ app.use(cors({
     "http://0.0.0.0:5173",
     process.env.CLIENT_URL
   ].filter(Boolean),
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
 // Rate limiting
@@ -139,11 +132,27 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Server accessible at:`);
-  console.log(`  - http://localhost:${PORT}`);
-  console.log(`  - http://127.0.0.1:${PORT}`);
-  console.log(`Frontend should be accessible at: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
+  console.log(`🚀 VoyageHub Server running on port ${PORT}`);
+  console.log(`📡 API accessible at: http://localhost:${PORT}`);
+  console.log(`🌐 Frontend should be at: http://localhost:5173`);
+  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+});
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n🛑 Received SIGINT. Graceful shutdown...');
+  server.close(() => {
+    Database.close();
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Received SIGTERM. Graceful shutdown...');
+  server.close(() => {
+    Database.close();
+    process.exit(0);
+  });
 });
 
 export { io };
