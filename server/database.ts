@@ -16,9 +16,19 @@ export class Database {
     }
     
     const dbPath = path.resolve(__dirname, 'voyagehub.db');
-    console.log('Database path:', dbPath);
+    console.log('Initializing database at:', dbPath);
     
-    this.instance = new sqlite3.Database(dbPath);
+    // Enable verbose mode for debugging
+    sqlite3.verbose();
+    
+    this.instance = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Error opening database:', err);
+      } else {
+        console.log('Connected to SQLite database');
+      }
+    });
+    
     this.createTables();
   }
 
@@ -31,6 +41,11 @@ export class Database {
 
   private static createTables() {
     const db = this.instance;
+    
+    console.log('Creating database tables...');
+
+    // Enable foreign keys
+    db.run('PRAGMA foreign_keys = ON');
 
     // Users table
     db.run(`
@@ -45,7 +60,10 @@ export class Database {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating users table:', err);
+      else console.log('Users table created/verified');
+    });
 
     // Vacations table
     db.run(`
@@ -64,7 +82,10 @@ export class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating vacations table:', err);
+      else console.log('Vacations table created/verified');
+    });
 
     // Tasks table
     db.run(`
@@ -84,7 +105,10 @@ export class Database {
         FOREIGN KEY (vacation_id) REFERENCES vacations (id),
         FOREIGN KEY (created_by) REFERENCES users (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating tasks table:', err);
+      else console.log('Tasks table created/verified');
+    });
 
     // Budgets table
     db.run(`
@@ -98,7 +122,10 @@ export class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (vacation_id) REFERENCES vacations (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating budgets table:', err);
+      else console.log('Budgets table created/verified');
+    });
 
     // Expenses table
     db.run(`
@@ -115,7 +142,10 @@ export class Database {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (budget_id) REFERENCES budgets (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating expenses table:', err);
+      else console.log('Expenses table created/verified');
+    });
 
     // Documents table
     db.run(`
@@ -136,7 +166,10 @@ export class Database {
         FOREIGN KEY (vacation_id) REFERENCES vacations (id),
         FOREIGN KEY (uploaded_by) REFERENCES users (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating documents table:', err);
+      else console.log('Documents table created/verified');
+    });
 
     // Notifications table
     db.run(`
@@ -151,14 +184,40 @@ export class Database {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Error creating notifications table:', err);
+      else console.log('Notifications table created/verified');
+    });
 
     // Create indexes for better performance
-    db.run(`CREATE INDEX IF NOT EXISTS idx_vacations_user_id ON vacations (user_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_vacation_id ON tasks (vacation_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_budgets_vacation_id ON budgets (vacation_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_budget_id ON expenses (budget_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_documents_vacation_id ON documents (vacation_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications (user_id)`);
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_vacations_user_id ON vacations (user_id)',
+      'CREATE INDEX IF NOT EXISTS idx_tasks_vacation_id ON tasks (vacation_id)',
+      'CREATE INDEX IF NOT EXISTS idx_budgets_vacation_id ON budgets (vacation_id)',
+      'CREATE INDEX IF NOT EXISTS idx_expenses_budget_id ON expenses (budget_id)',
+      'CREATE INDEX IF NOT EXISTS idx_documents_vacation_id ON documents (vacation_id)',
+      'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications (user_id)'
+    ];
+
+    indexes.forEach((indexSQL, i) => {
+      db.run(indexSQL, (err) => {
+        if (err) console.error(`Error creating index ${i + 1}:`, err);
+        else console.log(`Index ${i + 1} created/verified`);
+      });
+    });
+
+    console.log('Database initialization complete');
+  }
+
+  static close() {
+    if (this.instance) {
+      this.instance.close((err) => {
+        if (err) {
+          console.error('Error closing database:', err);
+        } else {
+          console.log('Database connection closed');
+        }
+      });
+    }
   }
 }

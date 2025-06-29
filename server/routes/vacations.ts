@@ -73,7 +73,8 @@ router.post('/', (req: AuthRequest, res) => {
         [budgetId, vacationId],
         (budgetErr) => {
           if (budgetErr) {
-            console.error('Failed to create budget:', budgetErr);
+            console.error('Failed to create budget for vacation:', budgetErr);
+            // Don't fail the vacation creation if budget creation fails
           }
 
           const vacation = {

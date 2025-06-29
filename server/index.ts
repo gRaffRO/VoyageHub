@@ -13,6 +13,19 @@ import { documentRoutes } from './routes/documents';
 import { notificationRoutes } from './routes/notifications';
 import { authenticateToken } from './middleware/auth';
 
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\nReceived SIGINT. Graceful shutdown...');
+  Database.close();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\nReceived SIGTERM. Graceful shutdown...');
+  Database.close();
+  process.exit(0);
+});
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -23,7 +36,13 @@ const io = new Server(server, {
 });
 
 // Initialize database
-Database.initialize();
+try {
+  Database.initialize();
+  console.log('Database initialized successfully');
+} catch (error) {
+  console.error('Failed to initialize database:', error);
+  process.exit(1);
+}
 
 // Security middleware
 app.use(helmet());
@@ -124,6 +143,7 @@ server.listen(PORT, () => {
   console.log(`Server accessible at:`);
   console.log(`  - http://localhost:${PORT}`);
   console.log(`  - http://127.0.0.1:${PORT}`);
+  console.log(`Frontend should be accessible at: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
 });
 
 export { io };
