@@ -53,13 +53,19 @@ class ErrorBoundary extends React.Component<
 const removeLoadingFallback = () => {
   const fallback = document.querySelector('.loading-fallback');
   if (fallback) {
-    fallback.remove();
+    // Add fade out animation
+    fallback.style.opacity = '0';
+    setTimeout(() => {
+      fallback.remove();
+    }, 300);
   }
 };
 
 // Initialize app
 const initializeApp = () => {
   try {
+    console.log('Initializing VoyageHub...');
+    
     const rootElement = document.getElementById('root');
     if (!rootElement) {
       throw new Error('Root element not found');
@@ -75,8 +81,10 @@ const initializeApp = () => {
       </StrictMode>
     );
 
-    // Remove loading fallback after a short delay
-    setTimeout(removeLoadingFallback, 100);
+    console.log('React app rendered successfully');
+    
+    // Remove loading fallback after a short delay to ensure React has taken over
+    setTimeout(removeLoadingFallback, 500);
     
   } catch (error) {
     console.error('Failed to initialize app:', error);
@@ -85,14 +93,17 @@ const initializeApp = () => {
     const fallback = document.querySelector('.loading-fallback');
     if (fallback) {
       fallback.innerHTML = `
-        <div class="glass-card p-8 rounded-3xl text-center max-w-md">
-          <h1 style="color: white; margin-bottom: 1rem;">Failed to Load</h1>
+        <div class="glass-card" style="padding: 2rem; border-radius: 1.5rem; text-align: center; max-width: 24rem;">
+          <div style="width: 4rem; height: 4rem; background: rgba(239, 68, 68, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <span style="color: #F87171; font-size: 1.5rem;">⚠️</span>
+          </div>
+          <h1 style="color: white; margin-bottom: 1rem; font-size: 1.25rem; font-weight: bold;">Failed to Load</h1>
           <p style="color: rgba(255,255,255,0.7); margin-bottom: 1rem;">
             ${error instanceof Error ? error.message : 'Unknown error occurred'}
           </p>
           <button 
             onclick="window.location.reload()" 
-            style="padding: 0.5rem 1rem; background: #3B82F6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;"
+            style="padding: 0.5rem 1rem; background: #3B82F6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500;"
           >
             Refresh Page
           </button>
@@ -108,16 +119,3 @@ if (document.readyState === 'loading') {
 } else {
   initializeApp();
 }
-
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error('Root element not found');
-}
-
-createRoot(rootElement).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>
-);

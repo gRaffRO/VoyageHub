@@ -61,8 +61,8 @@ function App() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-card p-8 rounded-3xl text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white/60">Loading VoyageHub...</p>
-          <p className="text-white/40 text-sm mt-2">This should only take a moment</p>
+          <p className="text-white/60">Initializing VoyageHub...</p>
+          <p className="text-white/40 text-sm mt-2">Setting up your account</p>
         </div>
       </div>
     );
