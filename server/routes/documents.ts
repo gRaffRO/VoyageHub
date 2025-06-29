@@ -11,7 +11,7 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = 'uploads/documents';
+    const uploadDir = path.join(process.cwd(), 'uploads', 'documents');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -185,7 +185,7 @@ router.delete('/:id', (req: AuthRequest, res) => {
       }
 
       // Delete the file
-      const filePath = path.join(process.cwd(), row.file_url);
+      const filePath = path.resolve(process.cwd(), row.file_url.replace(/^\//, ''));
       fs.unlink(filePath, (fileErr) => {
         if (fileErr) {
           console.error('Failed to delete file:', fileErr);
@@ -211,7 +211,7 @@ router.delete('/:id', (req: AuthRequest, res) => {
 // Serve uploaded files
 router.get('/file/:filename', (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(process.cwd(), 'uploads', 'documents', filename);
+  const filePath = path.resolve(process.cwd(), 'uploads', 'documents', filename);
   
   if (fs.existsSync(filePath)) {
     res.sendFile(filePath);

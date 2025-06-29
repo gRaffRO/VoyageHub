@@ -28,7 +28,12 @@ Database.initialize();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://0.0.0.0:5173",
+    process.env.CLIENT_URL
+  ].filter(Boolean),
   credentials: true
 }));
 
@@ -97,6 +102,9 @@ const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Server accessible at:`);
+  console.log(`  - http://localhost:${PORT}`);
+  console.log(`  - http://127.0.0.1:${PORT}`);
 });
 
 export { io };

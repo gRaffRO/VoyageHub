@@ -1,14 +1,23 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class Database {
   private static instance: sqlite3.Database;
 
   static initialize() {
-    const dbPath = path.join(__dirname, 'voyagehub.db');
+    // Ensure the server directory exists
+    if (!fs.existsSync(__dirname)) {
+      fs.mkdirSync(__dirname, { recursive: true });
+    }
+    
+    const dbPath = path.resolve(__dirname, 'voyagehub.db');
+    console.log('Database path:', dbPath);
+    
     this.instance = new sqlite3.Database(dbPath);
     this.createTables();
   }
