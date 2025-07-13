@@ -64,6 +64,7 @@ router.post('/register', async (req, res) => {
             email,
             firstName,
             lastName,
+           avatar: null,
             preferences: {
               currency: 'USD',
               timezone: 'UTC',
@@ -99,7 +100,7 @@ router.post('/login', async (req, res) => {
     const db = Database.getInstance();
     
     db.get(
-      'SELECT id, email, password_hash, first_name, last_name, preferences FROM users WHERE email = ?',
+      'SELECT id, email, password_hash, first_name, last_name, avatar, preferences FROM users WHERE email = ?',
       [email],
       async (err, row: any) => {
         if (err) {
@@ -128,6 +129,7 @@ router.post('/login', async (req, res) => {
           email: row.email,
           firstName: row.first_name,
           lastName: row.last_name,
+         avatar: row.avatar,
           preferences: JSON.parse(row.preferences || '{}'),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -146,7 +148,7 @@ router.get('/profile', authenticateToken, (req: AuthRequest, res) => {
   const db = Database.getInstance();
   
   db.get(
-    'SELECT id, email, first_name, last_name, preferences, created_at, updated_at FROM users WHERE id = ?',
+    'SELECT id, email, first_name, last_name, avatar, preferences, created_at, updated_at FROM users WHERE id = ?',
     [req.user?.id],
     (err, row: any) => {
       if (err) {
@@ -162,6 +164,7 @@ router.get('/profile', authenticateToken, (req: AuthRequest, res) => {
         email: row.email,
         firstName: row.first_name,
         lastName: row.last_name,
+       avatar: row.avatar,
         preferences: JSON.parse(row.preferences || '{}'),
         createdAt: row.created_at,
         updatedAt: row.updated_at,
@@ -174,12 +177,12 @@ router.get('/profile', authenticateToken, (req: AuthRequest, res) => {
 
 // Update profile
 router.patch('/profile', authenticateToken, (req: AuthRequest, res) => {
-  const { firstName, lastName, preferences } = req.body;
+  const { firstName, lastName, avatar, preferences } = req.body;
   const db = Database.getInstance();
   
   db.run(
-    'UPDATE users SET first_name = ?, last_name = ?, preferences = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-    [firstName, lastName, JSON.stringify(preferences), req.user?.id],
+    'UPDATE users SET first_name = ?, last_name = ?, avatar = ?, preferences = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [firstName, lastName, avatar, JSON.stringify(preferences), req.user?.id],
     function(err) {
       if (err) {
         return res.status(500).json({ error: 'Failed to update profile' });

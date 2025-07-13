@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
+import { useTaskStore } from './stores/taskStore';
+import { initializeSocket, disconnectSocket } from './utils/socket';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { VacationsPage } from './pages/VacationsPage';
@@ -16,7 +18,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { gsap } from 'gsap';
 
 function App() {
-  const { isAuthenticated, isLoading, initializeAuth } = useAuthStore();
+  const { isAuthenticated, isLoading, initializeAuth, token } = useAuthStore();
+  const { handleRealTimeUpdate } = useTaskStore();
   const appRef = useRef<HTMLDivElement>(null);
 
   console.log('🔄 [App] Component rendered with state:', {
@@ -64,6 +67,33 @@ function App() {
       );
     }
   }, [isAuthenticated]);
+
+  // Initialize Socket.IO when authenticated
+  useEffect(() => {
+    if (isAuthenticated === true && token) {
+      console.log('🔄 [App] Initializing Socket.IO connection...');
+      const socket = initializeSocket(token);
+      
+      // Listen for real-time task updates
+      socket.on('task-updated', (data: { task: any }) => {
+        console.log('📡 [App] Received real-time task update:', data.task.id);
+        handleRealTimeUpdate(data.task);
+      });
+      
+      // Join vacation rooms when needed
+      socket.on('connect', () => {
+        console.log('✅ [App] Socket connected, ready for real-time updates');
+      });
+      
+      return () => {
+        console.log('🔌 [App] Cleaning up Socket.IO connection...');
+        disconnectSocket();
+      };
+    } else if (isAuthenticated === false) {
+      // Disconnect socket when not authenticated
+      disconnectSocket();
+    }
+  }, [isAuthenticated, token, handleRealTimeUpdate]);
 
   // Show loading state while initializing
   if (isAuthenticated === null || isLoading) {

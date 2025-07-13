@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
 import { useTaskStore } from '../stores/taskStore';
 import { useVacationStore } from '../stores/vacationStore';
+import { getSocket } from '../utils/socket';
 import { Plus, Search, Filter, CheckSquare, Clock, User, Calendar, Edit, Trash2 } from 'lucide-react';
 import { gsap } from 'gsap';
 
@@ -59,7 +60,23 @@ export const TasksPage: React.FC = () => {
   useEffect(() => {
     if (selectedVacationId) {
       fetchTasks(selectedVacationId);
+      
+      // Join vacation room for real-time updates
+      const socket = getSocket();
+      if (socket) {
+        socket.emit('join-vacation', selectedVacationId);
+        console.log('🏠 [TasksPage] Joined vacation room:', selectedVacationId);
+      }
     }
+    
+    return () => {
+      // Leave vacation room when component unmounts or vacation changes
+      const socket = getSocket();
+      if (socket && selectedVacationId) {
+        socket.emit('leave-vacation', selectedVacationId);
+        console.log('🚪 [TasksPage] Left vacation room:', selectedVacationId);
+      }
+    };
   }, [selectedVacationId, fetchTasks]);
 
   useEffect(() => {

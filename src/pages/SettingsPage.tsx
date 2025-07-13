@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
-import { User, Bell, Shield, Globe, Palette, Download, Trash2, Save } from 'lucide-react';
+import { User, Bell, Shield, Globe, Palette, Download, Trash2, Save, Camera, Upload } from 'lucide-react';
 import { gsap } from 'gsap';
 
 export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  const { user, updateProfile } = useAuthStore();
+  const [profileForm, setProfileForm] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    avatar: user?.avatar || '',
+  });
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,6 +25,29 @@ export const SettingsPage: React.FC = () => {
       );
     }
   }, []);
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // For demo purposes, we'll use a data URL
+      // In production, you'd upload to a cloud service
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setProfileForm(prev => ({ ...prev, avatar: dataUrl }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      await updateProfile(profileForm);
+      // Show success message
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -33,19 +63,46 @@ export const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex items-center space-x-6">
-              <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <User className="h-12 w-12 text-white" />
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                  {profileForm.avatar ? (
+                    <img 
+                      src={profileForm.avatar} 
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-12 w-12 text-white" />
+                  )}
+                </div>
+                <label className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors">
+                  <Camera className="h-4 w-4 text-white" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                </label>
               </div>
               <div>
-                <Button variant="glass" size="sm">Change Photo</Button>
+                <Button variant="glass" size="sm" icon={Upload}>Upload Photo</Button>
                 <p className="text-sm text-white/60 mt-2">JPG, PNG up to 5MB</p>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input label="First Name" defaultValue="John" />
-              <Input label="Last Name" defaultValue="Doe" />
-              <Input label="Email" type="email" defaultValue="john@example.com" />
+              <Input 
+                label="First Name" 
+                value={profileForm.firstName}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, firstName: e.target.value }))}
+              />
+              <Input 
+                label="Last Name" 
+                value={profileForm.lastName}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, lastName: e.target.value }))}
+              />
+              <Input label="Email" type="email" value={user?.email || ''} disabled />
               <Input label="Phone" type="tel" defaultValue="+1 (555) 123-4567" />
             </div>
             
@@ -59,7 +116,7 @@ export const SettingsPage: React.FC = () => {
               />
             </div>
             
-            <Button icon={Save} glow>Save Changes</Button>
+            <Button icon={Save} glow onClick={handleProfileSave}>Save Changes</Button>
           </div>
         );
 

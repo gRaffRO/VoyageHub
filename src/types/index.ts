@@ -189,4 +189,5 @@ export interface TaskState {
   updateTask: (id: string, data: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   reorderTasks: (tasks: Task[]) => void;
+  handleRealTimeUpdate: (task: Task) => void;
 }

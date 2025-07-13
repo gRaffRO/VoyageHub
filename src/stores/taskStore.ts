@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { TaskState, Task } from '../types';
 import { useAuthStore } from './authStore';
+import { getSocket } from '../utils/socket';
 
 export const useTaskStore = create<TaskState>((set, get) => ({
   tasks: [],
@@ -88,6 +89,19 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         ),
         isLoading: false,
       }));
+
+      // Emit real-time update
+      const socket = getSocket();
+      if (socket) {
+        const updatedTask = get().tasks.find(t => t.id === id);
+        if (updatedTask) {
+          socket.emit('task-update', {
+            vacationId: updatedTask.vacationId,
+            task: { ...updatedTask, ...data, updatedAt: new Date().toISOString() }
+          });
+          console.log('📡 [TaskStore] Emitted task update via socket');
+        }
+      }
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -124,5 +138,15 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
   reorderTasks: (tasks: Task[]) => {
     set({ tasks });
+  },
+
+  // Real-time update handler
+  handleRealTimeUpdate: (updatedTask: Task) => {
+    console.log('🔄 [TaskStore] Handling real-time task update:', updatedTask.id);
+    set(state => ({
+      tasks: state.tasks.map(t => 
+        t.id === updatedTask.id ? updatedTask : t
+      )
+    }));
   },
 }));
