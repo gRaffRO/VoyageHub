@@ -52,34 +52,20 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg transition-all duration-300 ${
-        glow ? 'shadow-[0_0_20px_rgba(139,92,246,0.3)] border-purple-500/30' : ''
-      } ${className}`}
-    >
-      {children}
-    </div>
-  );
-};
+      className={`
 
 export const CardHeader: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className = '',
 }) => (
-  <div className={`px-6 py-4 border-b border-white/10 ${className}`}>
+  <div className={\`px-6 py-4 border-b border-white/10 ${className}`}>
     {children}
   </div>
 );
 
-export const CardContent = forwardRef<HTMLDivElement, { children: React.ReactNode; className?: string }>(({
-  children,
-  className = '',
-}, ref) => {
-  return (
-    <div ref={ref} className={`px-6 py-4 ${className}`}>
-      {children}
-    </div>
-  );
-});
+    {children}
+  </div>
+);
 
 export const CardFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
@@ -89,3 +75,6 @@ export const CardFooter: React.FC<{ children: React.ReactNode; className?: strin
     {children}
   </div>
 );
+      }
+  )
+}
