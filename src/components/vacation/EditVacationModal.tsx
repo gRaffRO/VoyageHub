@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import { AutocompleteInput } from '../ui/AutocompleteInput';
 import { useVacationStore } from '../../stores/vacationStore';
 import { Vacation } from '../../types';
@@ -140,21 +141,18 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
         </div>
 
         <div className="form-element grid grid-cols-2 gap-4">
-          <Input
-            type="date"
+          <DatePicker
             label="Start Date"
-            icon={Calendar}
             value={formData.startDate}
             onChange={handleChange('startDate')}
             required
           />
-          <Input
-            type="date"
+          <DatePicker
             label="End Date"
-            icon={Calendar}
             value={formData.endDate}
             onChange={handleChange('endDate')}
             required
+            min={formData.startDate}
           />
         </div>
 

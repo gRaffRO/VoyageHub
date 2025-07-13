@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import { AutocompleteInput } from '../ui/AutocompleteInput';
 import { useVacationStore } from '../../stores/vacationStore';
 import { countries, cities } from '../../data/locations';
@@ -336,21 +337,18 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       </div>
 
       <div className="form-element grid grid-cols-2 gap-4">
-        <Input
-          type="date"
+        <DatePicker
           label="Start Date"
-          icon={Calendar}
           value={formData.startDate}
           onChange={handleChange('startDate')}
           required
         />
-        <Input
-          type="date"
+        <DatePicker
           label="End Date"
-          icon={Calendar}
           value={formData.endDate}
           onChange={handleChange('endDate')}
           required
+          min={formData.startDate}
         />
       </div>
     </div>
