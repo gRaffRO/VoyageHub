@@ -113,8 +113,8 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
   
-  // Date picker handlers
   const handleDateChange = (field: string) => (value: string) => {
+    console.log(`Setting ${field} to:`, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

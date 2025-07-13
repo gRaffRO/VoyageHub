@@ -117,8 +117,8 @@ export const BudgetPage: React.FC = () => {
     }
   };
 
-  // Date picker handlers
   const handleDateChange = (field: string) => (value: string) => {
+    console.log(`Setting ${field} to:`, value);
     setExpenseForm(prev => ({ ...prev, [field]: value }));
   };
 

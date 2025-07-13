@@ -235,8 +235,8 @@ export const TasksPage: React.FC = () => {
     }
   };
 
-  // Date picker handlers
   const handleDateChange = (field: string) => (value: string) => {
+    console.log(`Setting ${field} to:`, value);
     setTaskForm(prev => ({ ...prev, [field]: value }));
   };
 

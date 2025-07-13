@@ -159,13 +159,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return '';
+    console.log('Formatting date:', dateString);
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const formatted = date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
+    console.log('Formatted result:', formatted);
+    return formatted;
   };
 
   const generateYearOptions = () => {
