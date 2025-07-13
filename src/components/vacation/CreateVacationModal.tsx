@@ -13,6 +13,45 @@ interface CreateVacationModalProps {
   onClose: () => void;
 }
 
+type TravelType = 'domestic' | 'continental' | 'intercontinental';
+
+const travelTypeInfo = {
+  domestic: {
+    title: 'Domestic Travel',
+    description: 'Travel within your country',
+    icon: '🏠',
+    categories: [
+      'Train Tickets', 'Bus/Coach', 'Car Rental', 'Taxi/Uber/Local Transport',
+      'Hotels', 'Airbnb/Vacation Rentals', 'Restaurants', 'Street Food/Local Cuisine',
+      'Groceries', 'Tours & Excursions', 'Museums & Attractions', 'Souvenirs',
+      'Emergency Fund', 'Miscellaneous'
+    ]
+  },
+  continental: {
+    title: 'Continental Travel',
+    description: 'Travel within your continent',
+    icon: '🌍',
+    categories: [
+      'Airplane Tickets', 'Train Tickets', 'Car Rental', 'Taxi/Uber/Local Transport',
+      'Hotels', 'Airbnb/Vacation Rentals', 'Restaurants', 'Street Food/Local Cuisine',
+      'Groceries', 'Tours & Excursions', 'Museums & Attractions', 'eSIM/Mobile Data',
+      'Travel Insurance', 'Souvenirs', 'Emergency Fund', 'Miscellaneous'
+    ]
+  },
+  intercontinental: {
+    title: 'Intercontinental Travel',
+    description: 'Travel between continents',
+    icon: '✈️',
+    categories: [
+      'Airplane Tickets', 'Taxi/Uber/Local Transport', 'Hotels', 'Airbnb/Vacation Rentals',
+      'Restaurants', 'Street Food/Local Cuisine', 'Groceries', 'Tours & Excursions',
+      'Museums & Attractions', 'Entertainment/Shows', 'eSIM/Mobile Data', 'WiFi/Internet',
+      'Travel Insurance', 'Visa/Documentation', 'Luggage/Travel Gear', 'Souvenirs',
+      'Clothing/Shopping', 'Emergency Fund', 'Tips & Service Charges', 'Miscellaneous'
+    ]
+  }
+};
+
 interface Destination {
   id: string;
   name: string;
@@ -27,6 +66,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   onClose,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [travelType, setTravelType] = useState<TravelType>('domestic');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -62,6 +102,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   const resetForm = () => {
     console.log('🔄 [CreateVacationModal] resetForm called');
     setCurrentStep(1);
+    setTravelType('domestic');
     setFormData({
       title: '',
       description: '',
@@ -195,6 +236,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       await createVacation({
         ...formData,
         status: 'planning',
+        travelType,
         destinations: destinations.map(dest => ({
           id: dest.id,
           name: dest.name,
@@ -226,6 +268,47 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       <div className="text-center mb-6">
         <h3 className="text-lg font-medium text-white mb-2">Basic Information</h3>
         <p className="text-white/60 text-sm">Let's start with the basics of your vacation</p>
+      </div>
+
+      {/* Travel Type Selection */}
+      <div className="form-element">
+        <label className="block text-sm font-medium text-white/90 mb-4">Travel Type</label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Object.entries(travelTypeInfo).map(([type, info]) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setTravelType(type as TravelType)}
+              className={`glass-card p-4 rounded-xl text-center transition-all hover:scale-105 ${
+                travelType === type 
+                  ? 'ring-2 ring-blue-500 bg-blue-500/20' 
+                  : 'hover:bg-white/10'
+              }`}
+            >
+              <div className="text-3xl mb-2">{info.icon}</div>
+              <h4 className="font-medium text-white mb-1">{info.title}</h4>
+              <p className="text-xs text-white/60 mb-2">{info.description}</p>
+              <p className="text-xs text-blue-300">{info.categories.length} categories</p>
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 glass-card p-3 rounded-xl">
+          <p className="text-sm text-white/70 mb-2">
+            <span className="font-medium">{travelTypeInfo[travelType].title}</span> includes:
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {travelTypeInfo[travelType].categories.slice(0, 6).map((category, index) => (
+              <span key={index} className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
+                {category}
+              </span>
+            ))}
+            {travelTypeInfo[travelType].categories.length > 6 && (
+              <span className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/60">
+                +{travelTypeInfo[travelType].categories.length - 6} more
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="form-element">
