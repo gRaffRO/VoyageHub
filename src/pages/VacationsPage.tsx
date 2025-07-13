@@ -50,10 +50,8 @@ export const VacationsPage: React.FC = () => {
   };
 
   const handleViewVacation = (vacation: Vacation) => {
-    // Navigate to a detailed view - for now, let's go to the tasks page with this vacation
-    // You could create a dedicated vacation details page later
-    console.log('🔄 [VacationsPage] Navigating to tasks for vacation:', vacation.id);
-    navigate(`/tasks?vacation=${vacation.id}`);
+    console.log('🔄 [VacationsPage] Navigating to vacation details for:', vacation.id);
+    navigate(`/vacations/${vacation.id}`);
   };
   
   const handleModalClose = () => {

@@ -4,6 +4,7 @@ import { useAuthStore } from './stores/authStore';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { VacationsPage } from './pages/VacationsPage';
+import { VacationDetailsPage } from './pages/VacationDetailsPage';
 import { TasksPage } from './pages/TasksPage';
 import { BudgetPage } from './pages/BudgetPage';
 import { DocumentsPage } from './pages/DocumentsPage';
@@ -105,6 +106,7 @@ function App() {
             <Routes>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/vacations" element={<VacationsPage />} />
+              <Route path="/vacations/:id" element={<VacationDetailsPage />} />
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/budget" element={<BudgetPage />} />
               <Route path="/documents" element={<DocumentsPage />} />

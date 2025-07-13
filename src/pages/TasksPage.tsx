@@ -106,13 +106,30 @@ export const TasksPage: React.FC = () => {
   };
 
   const toggleTaskStatus = async (taskId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'completed' ? 'pending' : 
-                     currentStatus === 'pending' ? 'in-progress' : 'completed';
+    let newStatus: string;
+    
+    // Cycle through: pending -> in-progress -> completed -> pending
+    switch (currentStatus) {
+      case 'pending':
+        newStatus = 'in-progress';
+        break;
+      case 'in-progress':
+        newStatus = 'completed';
+        break;
+      case 'completed':
+        newStatus = 'pending';
+        break;
+      default:
+        newStatus = 'pending';
+    }
+    
+    console.log(`🔄 [TasksPage] Changing task ${taskId} status from ${currentStatus} to ${newStatus}`);
     
     try {
       await updateTask(taskId, { status: newStatus });
+      console.log(`✅ [TasksPage] Task status updated successfully`);
     } catch (error) {
-      console.error('Failed to update task status:', error);
+      console.error('❌ [TasksPage] Failed to update task status:', error);
     }
   };
 
@@ -352,14 +369,23 @@ export const TasksPage: React.FC = () => {
                   <div className="flex items-start space-x-4 flex-1">
                     <button
                       onClick={() => toggleTaskStatus(task.id, task.status)}
-                      className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      className={`mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition-all cursor-pointer ${
                         task.status === 'completed' 
                           ? 'bg-green-500 border-green-500' 
+                          : task.status === 'in-progress'
+                          ? 'bg-blue-500 border-blue-500'
                           : 'border-white/30 hover:border-white/50'
+                      }`}
+                      title={`Click to change from ${task.status} to ${
+                        task.status === 'pending' ? 'in-progress' :
+                        task.status === 'in-progress' ? 'completed' : 'pending'
                       }`}
                     >
                       {task.status === 'completed' && (
                         <CheckSquare className="h-3 w-3 text-white" />
+                      )}
+                      {task.status === 'in-progress' && (
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                       )}
                     </button>
                     
@@ -371,7 +397,8 @@ export const TasksPage: React.FC = () => {
                           {task.title}
                         </h3>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(task.status)}`}>
-                          {task.status.replace('-', ' ')}
+                          {task.status === 'in-progress' ? 'In Progress' : 
+                           task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                         </span>
                         <span className={`text-xs font-medium ${getPriorityColor(task.priority)}`}>
                           {task.priority.toUpperCase()}
