@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
+import { ConfirmModal } from '../ui/ConfirmModal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useVacationStore } from '../../stores/vacationStore';
@@ -28,6 +29,7 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
   const [collaborators, setCollaborators] = useState<string[]>(vacation.collaborators);
   const [newCollaboratorEmail, setNewCollaboratorEmail] = useState('');
   const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const { updateVacation, deleteVacation, fetchVacations, isLoading } = useVacationStore();
   const formRef = useRef<HTMLFormElement>(null);
@@ -63,23 +65,18 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
   };
 
   const handleDelete = async () => {
-    console.log('🔄 [EditVacationModal] Delete button clicked for vacation:', vacation.id);
+    console.log('🔄 [EditVacationModal] Delete confirmed for vacation:', vacation.id);
     
-    if (confirm('Are you sure you want to delete this vacation? This action cannot be undone.')) {
-      console.log('✅ [EditVacationModal] User confirmed deletion');
-      try {
-        console.log('🔄 [EditVacationModal] Calling deleteVacation...');
-        await deleteVacation(vacation.id);
-        console.log('✅ [EditVacationModal] Vacation deleted successfully');
-        // Force a refresh of the vacations list
-        await fetchVacations();
-        onClose();
-      } catch (err) {
-        console.error('❌ [EditVacationModal] Delete failed:', err);
-        setError(`Failed to delete vacation: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
-    } else {
-      console.log('❌ [EditVacationModal] User cancelled deletion');
+    try {
+      console.log('🔄 [EditVacationModal] Calling deleteVacation...');
+      await deleteVacation(vacation.id);
+      console.log('✅ [EditVacationModal] Vacation deleted successfully');
+      // Force a refresh of the vacations list
+      await fetchVacations();
+      onClose();
+    } catch (err) {
+      console.error('❌ [EditVacationModal] Delete failed:', err);
+      setError(`Failed to delete vacation: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -230,7 +227,7 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
             type="button"
             variant="danger"
             icon={Trash2}
-            onClick={handleDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             className="flex-1"
           >
             Delete Vacation
@@ -249,6 +246,18 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
           </Button>
         </div>
       </form>
+      
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Vacation"
+        message={`Are you sure you want to delete "${vacation.title}"? This action cannot be undone and will remove all associated tasks, documents, and budget information.`}
+        confirmText="Delete Vacation"
+        cancelText="Keep Vacation"
+        type="danger"
+      />
     </Modal>
   );
 };

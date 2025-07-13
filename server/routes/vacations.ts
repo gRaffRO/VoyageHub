@@ -200,21 +200,46 @@ router.patch('/:id', (req: AuthRequest, res) => {
 
 // Delete vacation
 router.delete('/:id', (req: AuthRequest, res) => {
+  console.log('🔄 [Server] DELETE vacation request for ID:', req.params.id, 'by user:', req.user?.id);
+  
   const db = Database.getInstance();
   
-  db.run(
-    'DELETE FROM vacations WHERE id = ? AND user_id = ?',
+  // First check if vacation exists and belongs to user
+  db.get(
+    'SELECT id, title FROM vacations WHERE id = ? AND user_id = ?',
     [req.params.id, req.user?.id],
-    function(err) {
+    (err, row: any) => {
       if (err) {
-        return res.status(500).json({ error: 'Failed to delete vacation' });
+        console.error('❌ [Server] Database error checking vacation:', err);
+        return res.status(500).json({ error: 'Database error' });
       }
       
-      if (this.changes === 0) {
+      if (!row) {
+        console.log('❌ [Server] Vacation not found or unauthorized');
         return res.status(404).json({ error: 'Vacation not found or unauthorized' });
       }
-
-      res.json({ message: 'Vacation deleted successfully' });
+      
+      console.log('✅ [Server] Found vacation to delete:', row.title);
+      
+      // Delete the vacation
+      db.run(
+        'DELETE FROM vacations WHERE id = ? AND user_id = ?',
+        [req.params.id, req.user?.id],
+        function(deleteErr) {
+          if (deleteErr) {
+            console.error('❌ [Server] Error deleting vacation:', deleteErr);
+            return res.status(500).json({ error: 'Failed to delete vacation' });
+          }
+          
+          if (this.changes === 0) {
+            console.log('❌ [Server] No vacation was deleted');
+            return res.status(404).json({ error: 'Vacation not found or unauthorized' });
+          }
+          
+          console.log('✅ [Server] Vacation deleted successfully, changes:', this.changes);
+          res.json({ message: 'Vacation deleted successfully' });
+        }
+      );
     }
   );
 });
