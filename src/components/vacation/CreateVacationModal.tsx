@@ -47,6 +47,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
+    console.log('🔄 [CreateVacationModal] Step changed to:', currentStep);
     if (isOpen && formRef.current) {
       const elements = formRef.current.querySelectorAll('.form-element');
       gsap.fromTo(elements,
@@ -96,11 +97,10 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       }
     }
     
-    if (currentStep === 2) {
-      // Step 2 validation - destinations are optional, so we can proceed
-      // No validation needed, user can proceed to step 3 even without destinations
-    }
+    // Step 2 validation - destinations are optional, so we can always proceed
+    // No validation needed for step 2 to step 3 transition
     
+    console.log('🔄 [CreateVacationModal] Moving from step', currentStep, 'to step', currentStep + 1);
     setCurrentStep(prev => Math.min(prev + 1, 3));
   };
 
@@ -109,6 +109,8 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   };
 
   const addDestination = () => {
+    console.log('🔄 [CreateVacationModal] Adding destination:', newDestination);
+    
     if (!newDestination.name || !newDestination.country || !newDestination.city) {
       setError('Please fill in all destination fields');
       return;
@@ -124,6 +126,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       endDate: newDestination.endDate || formData.endDate,
     };
 
+    console.log('✅ [CreateVacationModal] Destination created:', destination);
     setDestinations(prev => [...prev, destination]);
     setNewDestination({
       name: '',
@@ -132,6 +135,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       startDate: '',
       endDate: '',
     });
+    console.log('✅ [CreateVacationModal] Destination added successfully');
   };
 
   const removeDestination = (id: string) => {
@@ -518,7 +522,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               onClick={handleNextStep}
               glow
               className="flex-1"
-              disabled={false}
+              disabled={isLoading}
             >
               Next Step
             </Button>
