@@ -109,18 +109,18 @@ function App() {
     
     return (
       <ThemeProvider>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-card p-8 rounded-3xl text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white/80 text-lg font-medium">Loading VoyageHub...</p>
-          <p className="text-white/60 text-sm mt-2">Preparing your travel planning experience</p>
-          <div className="mt-4 text-xs text-white/40 font-mono">
-            Auth: {isAuthenticated === null ? 'checking' : isAuthenticated ? 'authenticated' : 'not authenticated'} | 
-            Loading: {isLoading ? 'true' : 'false'}
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="glass-card p-8 rounded-3xl text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white/80 text-lg font-medium">Loading VoyageHub...</p>
+            <p className="text-white/60 text-sm mt-2">Preparing your travel planning experience</p>
+            <div className="mt-4 text-xs text-white/40 font-mono">
+              Auth: {isAuthenticated === null ? 'checking' : isAuthenticated ? 'authenticated' : 'not authenticated'} | 
+              Loading: {isLoading ? 'true' : 'false'}
+            </div>
           </div>
         </div>
       </ThemeProvider>
-      </div>
     );
   }
 
@@ -138,31 +138,31 @@ function App() {
   console.log('🏠 [App] User authenticated, showing main application');
   return (
     <ThemeProvider>
-    <Router>
-      <div ref={appRef} className="min-h-screen">
-        <Header />
-        <div className="flex">
-          <Sidebar />
-          <main className="flex-1 min-h-screen">
-            <Routes>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/vacations" element={<VacationsPage />} />
-              <Route path="/vacations/:id" element={<VacationDetailsPage />} />
-              <Route path="/tasks" element={<TasksPage />} />
-              <Route path="/budget" element={<BudgetPage />} />
-              <Route path="/documents" element={<DocumentsPage />} />
-              <Route path="/collaborators" element={<CollaboratorsPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </main>
+      <Router>
+        <div ref={appRef} className="min-h-screen">
+          <Header />
+          <div className="flex">
+            <Sidebar />
+            <main className="flex-1 min-h-screen">
+              <Routes>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/vacations" element={<VacationsPage />} />
+                <Route path="/vacations/:id" element={<VacationDetailsPage />} />
+                <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/budget" element={<BudgetPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
+                <Route path="/collaborators" element={<CollaboratorsPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </main>
+          </div>
+          
+          {/* Toast Container */}
+          <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
         </div>
-        
-        {/* Toast Container */}
-        <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
-      </div>
-    </Router>
+      </Router>
     </ThemeProvider>
   );
 }
