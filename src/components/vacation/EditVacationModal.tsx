@@ -63,13 +63,21 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
   };
 
   const handleDelete = async () => {
+    console.log('🔄 [EditVacationModal] Delete button clicked for vacation:', vacation.id);
+    
     if (confirm('Are you sure you want to delete this vacation? This action cannot be undone.')) {
+      console.log('✅ [EditVacationModal] User confirmed deletion');
       try {
+        console.log('🔄 [EditVacationModal] Calling deleteVacation...');
         await deleteVacation(vacation.id);
+        console.log('✅ [EditVacationModal] Vacation deleted successfully');
         onClose();
       } catch (err) {
-        setError('Failed to delete vacation. Please try again.');
+        console.error('❌ [EditVacationModal] Delete failed:', err);
+        setError(`Failed to delete vacation: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
+    } else {
+      console.log('❌ [EditVacationModal] User cancelled deletion');
     }
   };
 

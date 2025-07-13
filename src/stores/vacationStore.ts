@@ -104,10 +104,12 @@ export const useVacationStore = create<VacationState>((set, get) => ({
   },
 
   deleteVacation: async (id: string) => {
+    console.log('🔄 [VacationStore] deleteVacation called for ID:', id);
     set({ isLoading: true });
     
     try {
       const { token } = useAuthStore.getState();
+      console.log('🔄 [VacationStore] Making DELETE request...');
       const apiUrl = import.meta.env.VITE_API_URL || '/api';
       const response = await fetch(`${apiUrl}/vacations/${id}`, {
         method: 'DELETE',
@@ -116,17 +118,23 @@ export const useVacationStore = create<VacationState>((set, get) => ({
         },
       });
 
+      console.log('📡 [VacationStore] Delete response status:', response.status);
+
       if (!response.ok) {
         const error = await response.json();
+        console.error('❌ [VacationStore] Delete request failed:', error);
         throw new Error(error.error || 'Failed to delete vacation');
       }
 
+      console.log('✅ [VacationStore] Vacation deleted from server, updating local state...');
       set(state => ({
         vacations: state.vacations.filter(v => v.id !== id),
         currentVacation: state.currentVacation?.id === id ? null : state.currentVacation,
         isLoading: false,
       }));
+      console.log('✅ [VacationStore] Local state updated successfully');
     } catch (error) {
+      console.error('❌ [VacationStore] Delete vacation error:', error);
       set({ isLoading: false });
       throw error;
     }

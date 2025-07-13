@@ -58,6 +58,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   }, [isOpen, currentStep]);
 
   const resetForm = () => {
+    console.log('🔄 [CreateVacationModal] resetForm called');
     setCurrentStep(1);
     setFormData({
       title: '',
@@ -79,6 +80,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   };
 
   const handleClose = () => {
+    console.log('🔄 [CreateVacationModal] handleClose called');
     resetForm();
     onClose();
   };
@@ -101,7 +103,11 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
     // No validation needed for step 2 to step 3 transition
     
     console.log('🔄 [CreateVacationModal] Moving from step', currentStep, 'to step', currentStep + 1);
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    setCurrentStep(prev => {
+      const newStep = Math.min(prev + 1, 3);
+      console.log('✅ [CreateVacationModal] Step changed from', prev, 'to', newStep);
+      return newStep;
+    });
   };
 
   const handlePrevStep = () => {
@@ -169,10 +175,17 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🔄 [CreateVacationModal] handleSubmit called');
     e.preventDefault();
     setError('');
 
     try {
+      console.log('🔄 [CreateVacationModal] Creating vacation with data:', {
+        ...formData,
+        destinations: destinations.length,
+        collaborators: collaborators.length
+      });
+      
       await createVacation({
         ...formData,
         status: 'planning',
@@ -190,6 +203,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
         isPublic: false,
       });
       
+      console.log('✅ [CreateVacationModal] Vacation created successfully');
       handleClose();
     } catch (err) {
       console.error('Error creating vacation:', err);

@@ -46,6 +46,7 @@ export const Modal: React.FC<ModalProps> = ({
   }, [isOpen]);
 
   const handleClose = () => {
+    console.log('🔄 [Modal] handleClose called');
     if (modalRef.current && backdropRef.current) {
       gsap.to(modalRef.current, {
         opacity: 0,
@@ -59,9 +60,13 @@ export const Modal: React.FC<ModalProps> = ({
         opacity: 0,
         duration: 0.3,
         ease: "power2.in",
-        onComplete: onClose
+        onComplete: () => {
+          console.log('✅ [Modal] Animation complete, calling onClose');
+          onClose();
+        }
       });
     } else {
+      console.log('⚠️ [Modal] No animation refs, calling onClose directly');
       onClose();
     }
   };
