@@ -10,17 +10,17 @@ export const RecentActivity: React.FC = () => {
   const { vacations } = useVacationStore();
   const { tasks } = useTaskStore();
   const { budgets } = useBudgetStore();
-  const activityRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activityRef.current) {
-      const items = activityRef.current.querySelectorAll('.activity-item');
+    if (containerRef.current) {
+      const items = containerRef.current.querySelectorAll('.activity-item');
       gsap.fromTo(items,
         { x: 50, opacity: 0 },
         { x: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
       );
     }
-  }, []);
+  }, [vacations, tasks, budgets]); // Re-run animation when data changes
 
   // Generate activities from real data
   const activities = [];
@@ -80,7 +80,7 @@ export const RecentActivity: React.FC = () => {
       <CardHeader>
         <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
       </CardHeader>
-      <CardContent ref={activityRef}>
+      <CardContent ref={containerRef}>
         {sortedActivities.length > 0 ? (
           <div className="space-y-4">
             {sortedActivities.map((activity, index) => (
