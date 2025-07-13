@@ -29,7 +29,7 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
   const [newCollaboratorEmail, setNewCollaboratorEmail] = useState('');
   const [error, setError] = useState('');
   
-  const { updateVacation, deleteVacation, isLoading } = useVacationStore();
+  const { updateVacation, deleteVacation, fetchVacations, isLoading } = useVacationStore();
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -71,6 +71,8 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
         console.log('🔄 [EditVacationModal] Calling deleteVacation...');
         await deleteVacation(vacation.id);
         console.log('✅ [EditVacationModal] Vacation deleted successfully');
+        // Force a refresh of the vacations list
+        await fetchVacations();
         onClose();
       } catch (err) {
         console.error('❌ [EditVacationModal] Delete failed:', err);

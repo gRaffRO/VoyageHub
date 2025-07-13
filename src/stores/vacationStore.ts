@@ -109,19 +109,29 @@ export const useVacationStore = create<VacationState>((set, get) => ({
     
     try {
       const { token } = useAuthStore.getState();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
       console.log('🔄 [VacationStore] Making DELETE request...');
       const apiUrl = import.meta.env.VITE_API_URL || '/api';
       const response = await fetch(`${apiUrl}/vacations/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       });
 
       console.log('📡 [VacationStore] Delete response status:', response.status);
 
       if (!response.ok) {
-        const error = await response.json();
+        let error;
+        try {
+          error = await response.json();
+        } catch (parseError) {
+          error = { error: `HTTP ${response.status}: ${response.statusText}` };
+        }
         console.error('❌ [VacationStore] Delete request failed:', error);
         throw new Error(error.error || 'Failed to delete vacation');
       }
@@ -133,6 +143,9 @@ export const useVacationStore = create<VacationState>((set, get) => ({
         isLoading: false,
       }));
       console.log('✅ [VacationStore] Local state updated successfully');
+      
+      // Return success to indicate the operation completed
+      return true;
     } catch (error) {
       console.error('❌ [VacationStore] Delete vacation error:', error);
       set({ isLoading: false });

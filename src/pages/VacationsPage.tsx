@@ -44,6 +44,7 @@ export const VacationsPage: React.FC = () => {
   });
 
   const handleEditVacation = (vacation: Vacation) => {
+    console.log('🔄 [VacationsPage] Opening edit modal for vacation:', vacation.id);
     setEditingVacation(vacation);
     setIsEditModalOpen(true);
   };
@@ -51,7 +52,16 @@ export const VacationsPage: React.FC = () => {
   const handleViewVacation = (vacation: Vacation) => {
     // Navigate to a detailed view - for now, let's go to the tasks page with this vacation
     // You could create a dedicated vacation details page later
+    console.log('🔄 [VacationsPage] Navigating to tasks for vacation:', vacation.id);
     navigate(`/tasks?vacation=${vacation.id}`);
+  };
+  
+  const handleModalClose = () => {
+    console.log('🔄 [VacationsPage] Edit modal closing, refreshing vacations...');
+    setIsEditModalOpen(false);
+    setEditingVacation(null);
+    // Refresh the vacations list when modal closes
+    fetchVacations();
   };
 
   if (isLoading) {
@@ -170,10 +180,7 @@ export const VacationsPage: React.FC = () => {
       {editingVacation && (
         <EditVacationModal
           isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingVacation(null);
-          }}
+          onClose={handleModalClose}
           vacation={editingVacation}
         />
       )}
