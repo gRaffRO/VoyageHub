@@ -607,11 +607,10 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
           {currentStep < 3 ? (
             <Button
               type="button"
-              onClick={handleNextStep}
-             onClick={(e) => {
-               e.preventDefault();
-               handleNextStep();
-             }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNextStep();
+              }}
               glow
               className="flex-1"
               disabled={isLoading}

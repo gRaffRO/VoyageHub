@@ -109,15 +109,7 @@ export const Header: React.FC = () => {
                   </div>
                 </div>
               )}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-white">
-                  {user?.firstName} {user?.lastName}
-                </p>
-                <p className="text-xs text-white/60">{user?.email}</p>
-              </div>
             </div>
-
           </div>
         </div>
       </div>
