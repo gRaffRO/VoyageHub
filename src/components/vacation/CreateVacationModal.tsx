@@ -96,6 +96,11 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       }
     }
     
+    if (currentStep === 2) {
+      // Step 2 validation - destinations are optional, so we can proceed
+      // No validation needed, user can proceed to step 3 even without destinations
+    }
+    
     setCurrentStep(prev => Math.min(prev + 1, 3));
   };
 
@@ -108,6 +113,9 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       setError('Please fill in all destination fields');
       return;
     }
+
+    // Clear any existing errors
+    setError('');
 
     const destination: Destination = {
       id: Date.now().toString(),
@@ -124,7 +132,6 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       startDate: '',
       endDate: '',
     });
-    setError('');
   };
 
   const removeDestination = (id: string) => {
@@ -175,22 +182,13 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
           startDate: dest.startDate,
           endDate: dest.endDate,
         })),
-        budget: {
-          id: '',
-          vacationId: '',
-          totalBudget: 0,
-          currency: 'USD',
-          categories: [],
-          expenses: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
         collaborators,
         isPublic: false,
       });
       
       handleClose();
     } catch (err) {
+      console.error('Error creating vacation:', err);
       setError('Failed to create vacation. Please try again.');
     }
   };
@@ -271,6 +269,14 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
             value={newDestination.name}
             onChange={(e) => setNewDestination(prev => ({ ...prev, name: e.target.value }))}
             placeholder="e.g., Paris City Center, Bali Beach Resort"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (newDestination.name && newDestination.country && newDestination.city) {
+                  addDestination();
+                }
+              }
+            }}
           />
           
           <div className="grid grid-cols-2 gap-4">
@@ -279,12 +285,28 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               value={newDestination.country}
               onChange={(e) => setNewDestination(prev => ({ ...prev, country: e.target.value }))}
               placeholder="e.g., France"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (newDestination.name && newDestination.country && newDestination.city) {
+                    addDestination();
+                  }
+                }
+              }}
             />
             <Input
               label="City"
               value={newDestination.city}
               onChange={(e) => setNewDestination(prev => ({ ...prev, city: e.target.value }))}
               placeholder="e.g., Paris"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (newDestination.name && newDestination.country && newDestination.city) {
+                    addDestination();
+                  }
+                }
+              }}
             />
           </div>
           
@@ -309,6 +331,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
             icon={Plus}
             onClick={addDestination}
             className="w-full"
+            disabled={!newDestination.name || !newDestination.country || !newDestination.city}
           >
             Add Destination
           </Button>
@@ -495,6 +518,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               onClick={handleNextStep}
               glow
               className="flex-1"
+              disabled={false}
             >
               Next Step
             </Button>
