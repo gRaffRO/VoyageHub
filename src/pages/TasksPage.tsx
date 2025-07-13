@@ -22,7 +22,9 @@ export const TasksPage: React.FC = () => {
   const [selectedVacationId, setSelectedVacationId] = useState<string>('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
+  const [deletingTask, setDeletingTask] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
@@ -196,12 +198,22 @@ export const TasksPage: React.FC = () => {
   };
 
   const handleDelete = async (taskId: string) => {
-    if (confirm('Are you sure you want to delete this task?')) {
-      try {
-        await deleteTask(taskId);
-      } catch (error) {
-        console.error('Failed to delete task:', error);
-      }
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setDeletingTask(task);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingTask) return;
+    
+    try {
+      await deleteTask(deletingTask.id);
+      setIsDeleteModalOpen(false);
+      setDeletingTask(null);
+    } catch (error) {
+      console.error('Failed to delete task:', error);
     }
   };
 
@@ -592,6 +604,82 @@ export const TasksPage: React.FC = () => {
           </div>
         </form>
       </Modal>
+      {/* Delete Task Confirmation Modal */}
+      {deletingTask && (
+        <Modal 
+          isOpen={isDeleteModalOpen} 
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setDeletingTask(null);
+          }} 
+          title="Delete Task"
+        >
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                <Trash2 className="h-6 w-6 text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-white">Delete "{deletingTask.title}"?</h3>
+                <p className="text-white/60 text-sm mt-1">This action cannot be undone.</p>
+              </div>
+            </div>
+            
+            <div className="glass-card p-4 rounded-xl">
+              <h4 className="font-medium text-white mb-2">Task Details:</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-white/60">Title:</span>
+                  <span className="text-white">{deletingTask.title}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/60">Status:</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(deletingTask.status)}`}>
+                    {deletingTask.status === 'in-progress' ? 'In Progress' : 
+                     deletingTask.status.charAt(0).toUpperCase() + deletingTask.status.slice(1)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/60">Priority:</span>
+                  <span className={`font-medium ${getPriorityColor(deletingTask.priority)}`}>
+                    {deletingTask.priority.toUpperCase()}
+                  </span>
+                </div>
+                {deletingTask.description && (
+                  <div className="pt-2 border-t border-white/10">
+                    <span className="text-white/60">Description:</span>
+                    <p className="text-white text-sm mt-1">{deletingTask.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex space-x-3">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setDeletingTask(null);
+                }}
+                className="flex-1"
+              >
+                Keep Task
+              </Button>
+              <Button 
+                type="button"
+                variant="danger" 
+                icon={Trash2}
+                onClick={handleConfirmDelete}
+                className="flex-1"
+                disabled={isLoading}
+              >
+                Delete Task
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
