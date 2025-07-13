@@ -263,6 +263,15 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
+  
+  // Date picker handlers
+  const handleDateChange = (field: string) => (value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleDestinationDateChange = (field: string) => (value: string) => {
+    setNewDestination(prev => ({ ...prev, [field]: value }));
+  };
 
   const renderStep1 = () => (
     <div className="space-y-6">
@@ -374,13 +383,13 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
             value={newDestination.name}
             onChange={(value) => setNewDestination(prev => ({ ...prev, name: value }))}
             suggestions={cities}
-            placeholder="e.g., Paris City Center, Bali Beach Resort"
+           onChange={handleDateChange('startDate')}
             required
           />
           
           <div className="grid grid-cols-2 gap-4">
             <AutocompleteInput
-              label="Country"
+           onChange={handleDateChange('endDate')}
               value={newDestination.country}
               onChange={(value) => setNewDestination(prev => ({ ...prev, country: value }))}
               suggestions={countries}
@@ -401,7 +410,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               type="date"
               label="Arrival Date (Optional)"
               value={newDestination.startDate}
-              onChange={(e) => setNewDestination(prev => ({ ...prev, startDate: e.target.value }))}
+             onChange={handleDestinationDateChange('startDate')}
               min={formData.startDate}
               max={formData.endDate}
             />
@@ -409,7 +418,7 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               type="date"
               label="Departure Date (Optional)"
               value={newDestination.endDate}
-              onChange={(e) => setNewDestination(prev => ({ ...prev, endDate: e.target.value }))}
+             onChange={handleDestinationDateChange('endDate')}
               min={newDestination.startDate || formData.startDate}
               max={formData.endDate}
             />

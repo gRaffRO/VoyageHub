@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 interface DatePickerProps {
   label?: string;
   value: string;
-  onChange: (date: string) => void;
+  onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
   min?: string;
@@ -119,8 +119,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const handleDateClick = (date: Date) => {
     if (isDateDisabled(date)) return;
     
-    const dateString = date.toISOString().split('T')[0];
-    onChange(dateString);
+    const dateString = date.toISOString().split('T')[0]; 
+    onChange(dateString); // Pass the string directly
     setIsOpen(false);
   };
 

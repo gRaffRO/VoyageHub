@@ -112,6 +112,11 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
+  
+  // Date picker handlers
+  const handleDateChange = (field: string) => (value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Vacation" size="lg">
@@ -144,13 +149,13 @@ export const EditVacationModal: React.FC<EditVacationModalProps> = ({
           <DatePicker
             label="Start Date"
             value={formData.startDate}
-            onChange={handleChange('startDate')}
+           onChange={handleDateChange('startDate')}
             required
           />
           <DatePicker
             label="End Date"
             value={formData.endDate}
-            onChange={handleChange('endDate')}
+           onChange={handleDateChange('endDate')}
             required
             min={formData.startDate}
           />
