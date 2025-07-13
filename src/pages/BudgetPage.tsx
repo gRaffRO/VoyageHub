@@ -117,6 +117,11 @@ export const BudgetPage: React.FC = () => {
     }
   };
 
+  // Date picker handlers
+  const handleDateChange = (field: string) => (value: string) => {
+    setExpenseForm(prev => ({ ...prev, [field]: value }));
+  };
+
   if (vacations.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-96 p-8">
@@ -626,7 +631,7 @@ export const BudgetPage: React.FC = () => {
           <DatePicker
             label="Date"
             value={expenseForm.date}
-            onChange={(date) => setExpenseForm(prev => ({ ...prev, date }))}
+            onChange={handleDateChange('date')}
             required
           />
           
