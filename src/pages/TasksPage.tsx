@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
 import { useTaskStore } from '../stores/taskStore';
@@ -535,8 +536,7 @@ export const TasksPage: React.FC = () => {
                 <option value="high">High</option>
               </select>
             </div>
-            <Input
-              type="date"
+            <DatePicker
               label="Due Date (Optional)"
               value={taskForm.dueDate}
               onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}
@@ -597,8 +597,7 @@ export const TasksPage: React.FC = () => {
                 <option value="high">High</option>
               </select>
             </div>
-            <Input
-              type="date"
+            <DatePicker
               label="Due Date (Optional)"
               value={taskForm.dueDate}
               onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}

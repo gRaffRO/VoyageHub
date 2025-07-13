@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
 import { BudgetAllocationModal } from '../components/budget/BudgetAllocationModal';
@@ -635,9 +636,7 @@ export const BudgetPage: React.FC = () => {
               </select>
             </div>
           </div>
-          
-          <Input
-            type="date"
+          <DatePicker
             label="Date"
             value={expenseForm.date}
             onChange={(e) => setExpenseForm(prev => ({ ...prev, date: e.target.value }))}
@@ -655,8 +654,7 @@ export const BudgetPage: React.FC = () => {
             />
           </div>
           
-          <div className="flex space-x-3 pt-4">
-            <Button type="button" variant="ghost" onClick={() => setIsExpenseModalOpen(false)} className="flex-1">
+          <DatePicker
               Cancel
             </Button>
             <Button type="submit" icon={Plus} glow className="flex-1" disabled={isLoading}>
