@@ -69,8 +69,50 @@ router.post('/', (req: AuthRequest, res) => {
 
       // Create associated budget
       db.run(
-        'INSERT INTO budgets (id, vacation_id) VALUES (?, ?)',
-        [budgetId, vacationId],
+        'INSERT INTO budgets (id, vacation_id, categories) VALUES (?, ?, ?)',
+        [budgetId, vacationId, JSON.stringify([
+          // Transportation
+          { id: '1', name: 'Airplane Tickets', allocated: 0, spent: 0, color: 'bg-blue-500' },
+          { id: '2', name: 'Train Tickets', allocated: 0, spent: 0, color: 'bg-indigo-500' },
+          { id: '3', name: 'Bus/Coach', allocated: 0, spent: 0, color: 'bg-cyan-500' },
+          { id: '4', name: 'Car Rental', allocated: 0, spent: 0, color: 'bg-teal-500' },
+          { id: '5', name: 'Taxi/Uber/Local Transport', allocated: 0, spent: 0, color: 'bg-sky-500' },
+          
+          // Accommodation
+          { id: '6', name: 'Hotels', allocated: 0, spent: 0, color: 'bg-green-500' },
+          { id: '7', name: 'Airbnb/Vacation Rentals', allocated: 0, spent: 0, color: 'bg-emerald-500' },
+          { id: '8', name: 'Hostels', allocated: 0, spent: 0, color: 'bg-lime-500' },
+          
+          // Food & Dining
+          { id: '9', name: 'Restaurants', allocated: 0, spent: 0, color: 'bg-yellow-500' },
+          { id: '10', name: 'Street Food/Local Cuisine', allocated: 0, spent: 0, color: 'bg-amber-500' },
+          { id: '11', name: 'Groceries', allocated: 0, spent: 0, color: 'bg-orange-500' },
+          { id: '12', name: 'Drinks/Beverages', allocated: 0, spent: 0, color: 'bg-red-500' },
+          
+          // Activities & Entertainment
+          { id: '13', name: 'Tours & Excursions', allocated: 0, spent: 0, color: 'bg-purple-500' },
+          { id: '14', name: 'Museums & Attractions', allocated: 0, spent: 0, color: 'bg-violet-500' },
+          { id: '15', name: 'Entertainment/Shows', allocated: 0, spent: 0, color: 'bg-fuchsia-500' },
+          { id: '16', name: 'Adventure Sports', allocated: 0, spent: 0, color: 'bg-pink-500' },
+          
+          // Technology & Communication
+          { id: '17', name: 'eSIM/Mobile Data', allocated: 0, spent: 0, color: 'bg-slate-500' },
+          { id: '18', name: 'WiFi/Internet', allocated: 0, spent: 0, color: 'bg-gray-500' },
+          
+          // Travel Essentials
+          { id: '19', name: 'Travel Insurance', allocated: 0, spent: 0, color: 'bg-zinc-500' },
+          { id: '20', name: 'Visa/Documentation', allocated: 0, spent: 0, color: 'bg-stone-500' },
+          { id: '21', name: 'Luggage/Travel Gear', allocated: 0, spent: 0, color: 'bg-neutral-500' },
+          
+          // Shopping & Souvenirs
+          { id: '22', name: 'Souvenirs', allocated: 0, spent: 0, color: 'bg-rose-500' },
+          { id: '23', name: 'Clothing/Shopping', allocated: 0, spent: 0, color: 'bg-pink-400' },
+          
+          // Emergency & Miscellaneous
+          { id: '24', name: 'Emergency Fund', allocated: 0, spent: 0, color: 'bg-red-600' },
+          { id: '25', name: 'Tips & Service Charges', allocated: 0, spent: 0, color: 'bg-yellow-600' },
+          { id: '26', name: 'Miscellaneous', allocated: 0, spent: 0, color: 'bg-gray-600' },
+        ])],
         (budgetErr) => {
           if (budgetErr) {
             console.error('Failed to create budget for vacation:', budgetErr);
@@ -95,7 +137,49 @@ router.post('/', (req: AuthRequest, res) => {
               vacationId,
               totalBudget: 0,
               currency: 'USD',
-              categories: [],
+              categories: [
+                // Transportation
+                { id: '1', name: 'Airplane Tickets', allocated: 0, spent: 0, color: 'bg-blue-500' },
+                { id: '2', name: 'Train Tickets', allocated: 0, spent: 0, color: 'bg-indigo-500' },
+                { id: '3', name: 'Bus/Coach', allocated: 0, spent: 0, color: 'bg-cyan-500' },
+                { id: '4', name: 'Car Rental', allocated: 0, spent: 0, color: 'bg-teal-500' },
+                { id: '5', name: 'Taxi/Uber/Local Transport', allocated: 0, spent: 0, color: 'bg-sky-500' },
+                
+                // Accommodation
+                { id: '6', name: 'Hotels', allocated: 0, spent: 0, color: 'bg-green-500' },
+                { id: '7', name: 'Airbnb/Vacation Rentals', allocated: 0, spent: 0, color: 'bg-emerald-500' },
+                { id: '8', name: 'Hostels', allocated: 0, spent: 0, color: 'bg-lime-500' },
+                
+                // Food & Dining
+                { id: '9', name: 'Restaurants', allocated: 0, spent: 0, color: 'bg-yellow-500' },
+                { id: '10', name: 'Street Food/Local Cuisine', allocated: 0, spent: 0, color: 'bg-amber-500' },
+                { id: '11', name: 'Groceries', allocated: 0, spent: 0, color: 'bg-orange-500' },
+                { id: '12', name: 'Drinks/Beverages', allocated: 0, spent: 0, color: 'bg-red-500' },
+                
+                // Activities & Entertainment
+                { id: '13', name: 'Tours & Excursions', allocated: 0, spent: 0, color: 'bg-purple-500' },
+                { id: '14', name: 'Museums & Attractions', allocated: 0, spent: 0, color: 'bg-violet-500' },
+                { id: '15', name: 'Entertainment/Shows', allocated: 0, spent: 0, color: 'bg-fuchsia-500' },
+                { id: '16', name: 'Adventure Sports', allocated: 0, spent: 0, color: 'bg-pink-500' },
+                
+                // Technology & Communication
+                { id: '17', name: 'eSIM/Mobile Data', allocated: 0, spent: 0, color: 'bg-slate-500' },
+                { id: '18', name: 'WiFi/Internet', allocated: 0, spent: 0, color: 'bg-gray-500' },
+                
+                // Travel Essentials
+                { id: '19', name: 'Travel Insurance', allocated: 0, spent: 0, color: 'bg-zinc-500' },
+                { id: '20', name: 'Visa/Documentation', allocated: 0, spent: 0, color: 'bg-stone-500' },
+                { id: '21', name: 'Luggage/Travel Gear', allocated: 0, spent: 0, color: 'bg-neutral-500' },
+                
+                // Shopping & Souvenirs
+                { id: '22', name: 'Souvenirs', allocated: 0, spent: 0, color: 'bg-rose-500' },
+                { id: '23', name: 'Clothing/Shopping', allocated: 0, spent: 0, color: 'bg-pink-400' },
+                
+                // Emergency & Miscellaneous
+                { id: '24', name: 'Emergency Fund', allocated: 0, spent: 0, color: 'bg-red-600' },
+                { id: '25', name: 'Tips & Service Charges', allocated: 0, spent: 0, color: 'bg-yellow-600' },
+                { id: '26', name: 'Miscellaneous', allocated: 0, spent: 0, color: 'bg-gray-600' },
+              ],
               expenses: [],
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
