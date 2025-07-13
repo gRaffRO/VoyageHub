@@ -207,7 +207,7 @@ export const TasksPage: React.FC = () => {
     setEditingTask(task);
     setTaskForm({
       title: task.title,
-      description: task.description,
+      description: task.description || '',
       priority: task.priority,
       dueDate: task.dueDate || '',
       assignedTo: task.assignedTo || '',
@@ -233,6 +233,11 @@ export const TasksPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to delete task:', error);
     }
+  };
+
+  // Date picker handlers
+  const handleDateChange = (field: string) => (value: string) => {
+    setTaskForm(prev => ({ ...prev, [field]: value }));
   };
 
   if (vacations.length === 0) {
@@ -539,7 +544,7 @@ export const TasksPage: React.FC = () => {
             <DatePicker
               label="Due Date (Optional)"
               value={taskForm.dueDate}
-              onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}
+              onChange={handleDateChange('dueDate')}
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
@@ -600,7 +605,7 @@ export const TasksPage: React.FC = () => {
             <DatePicker
               label="Due Date (Optional)"
               value={taskForm.dueDate}
-              onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}
+              onChange={handleDateChange('dueDate')}
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
