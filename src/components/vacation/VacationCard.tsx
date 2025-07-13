@@ -135,6 +135,7 @@ export const VacationCard: React.FC<VacationCardProps> = ({
               size="sm"
               icon={Settings}
               onClick={() => onEdit(vacation)}
+              title="Edit vacation"
             />
           </div>
         </CardContent>

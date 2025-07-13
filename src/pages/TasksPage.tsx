@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
@@ -17,6 +18,7 @@ interface TaskFormData {
 }
 
 export const TasksPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [selectedVacationId, setSelectedVacationId] = useState<string>('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -41,10 +43,16 @@ export const TasksPage: React.FC = () => {
   }, [fetchVacations]);
 
   useEffect(() => {
-    if (vacations.length > 0 && !selectedVacationId) {
-      setSelectedVacationId(vacations[0].id);
+    if (vacations.length > 0) {
+      // Check if there's a vacation ID in the URL params
+      const vacationFromUrl = searchParams.get('vacation');
+      if (vacationFromUrl && vacations.find(v => v.id === vacationFromUrl)) {
+        setSelectedVacationId(vacationFromUrl);
+      } else if (!selectedVacationId) {
+        setSelectedVacationId(vacations[0].id);
+      }
     }
-  }, [vacations, selectedVacationId]);
+  }, [vacations, selectedVacationId, searchParams]);
 
   useEffect(() => {
     if (selectedVacationId) {

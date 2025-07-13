@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useVacationStore } from '../stores/vacationStore';
 import { VacationCard } from '../components/vacation/VacationCard';
 import { CreateVacationModal } from '../components/vacation/CreateVacationModal';
+import { EditVacationModal } from '../components/vacation/EditVacationModal';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Plus, Search, Filter, MapPin } from 'lucide-react';
@@ -10,10 +12,13 @@ import { gsap } from 'gsap';
 
 export const VacationsPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingVacation, setEditingVacation] = useState<Vacation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   
   const { vacations, fetchVacations, isLoading } = useVacationStore();
+  const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,11 +44,14 @@ export const VacationsPage: React.FC = () => {
   });
 
   const handleEditVacation = (vacation: Vacation) => {
-    console.log('Edit vacation:', vacation);
+    setEditingVacation(vacation);
+    setIsEditModalOpen(true);
   };
 
   const handleViewVacation = (vacation: Vacation) => {
-    console.log('View vacation:', vacation);
+    // Navigate to a detailed view - for now, let's go to the tasks page with this vacation
+    // You could create a dedicated vacation details page later
+    navigate(`/tasks?vacation=${vacation.id}`);
   };
 
   if (isLoading) {
@@ -157,6 +165,18 @@ export const VacationsPage: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
+
+      {/* Edit Vacation Modal */}
+      {editingVacation && (
+        <EditVacationModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingVacation(null);
+          }}
+          vacation={editingVacation}
+        />
+      )}
     </div>
   );
 };
