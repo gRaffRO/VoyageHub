@@ -63,16 +63,26 @@ export const BudgetPage: React.FC = () => {
   }, []);
 
   const currentBudget = selectedVacationId ? budgets[selectedVacationId] : null;
-  const totalSpent = currentBudget?.expenses.reduce((sum, expense) => sum + expense.amount, 0) || 0;
-  const remaining = (currentBudget?.totalBudget || 0) - totalSpent;
-  const budgetUsedPercentage = currentBudget?.totalBudget ? (totalSpent / currentBudget.totalBudget) * 100 : 0;
+  
+  // Separate budget spending from actual expenses
+  const budgetSpent = currentBudget?.expenses.filter(expense => 
+    currentBudget.categories.some(cat => cat.id === expense.categoryId && cat.allocated > 0)
+  ).reduce((sum, expense) => sum + expense.amount, 0) || 0;
+  
+  const actualExpenses = currentBudget?.expenses.filter(expense => 
+    !currentBudget.categories.some(cat => cat.id === expense.categoryId && cat.allocated > 0)
+  ).reduce((sum, expense) => sum + expense.amount, 0) || 0;
+  
+  const totalVacationCost = budgetSpent + actualExpenses;
+  const budgetRemaining = (currentBudget?.totalBudget || 0) - budgetSpent;
+  const budgetUsedPercentage = currentBudget?.totalBudget ? (budgetSpent / currentBudget.totalBudget) * 100 : 0;
 
   // Check for budget alerts
   useEffect(() => {
-    if (selectedVacationId && checkBudgetAlert(selectedVacationId) && budgetUsedPercentage >= 75) {
+    if (selectedVacationId && budgetUsedPercentage >= 75 && currentBudget?.totalBudget > 0) {
       addBudgetAlert(selectedVacationId, Math.round(budgetUsedPercentage));
     }
-  }, [selectedVacationId, budgetUsedPercentage, checkBudgetAlert, addBudgetAlert]);
+  }, [selectedVacationId, budgetUsedPercentage, addBudgetAlert, currentBudget?.totalBudget]);
 
   const handleBudgetSave = async (totalBudget: number, categories: any[]) => {
     if (selectedVacationId) {
@@ -251,8 +261,8 @@ export const BudgetPage: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white/70">Total Spent</p>
-                    <p className="text-2xl font-bold text-white">${totalSpent.toLocaleString()}</p>
+                    <p className="text-sm font-medium text-white/70">Budget Spent</p>
+                    <p className="text-2xl font-bold text-white">${budgetSpent.toLocaleString()}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
                     <TrendingDown className="h-6 w-6 text-white" />
@@ -265,12 +275,12 @@ export const BudgetPage: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white/70">Remaining</p>
-                    <p className={`text-2xl font-bold ${remaining >= 0 ? 'text-white' : 'text-red-400'}`}>
-                      ${remaining.toLocaleString()}
+                    <p className="text-sm font-medium text-white/70">Budget Remaining</p>
+                    <p className={`text-2xl font-bold ${budgetRemaining >= 0 ? 'text-white' : 'text-red-400'}`}>
+                      ${budgetRemaining.toLocaleString()}
                     </p>
                   </div>
-                  <div className={`w-12 h-12 bg-gradient-to-r ${remaining >= 0 ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600'} rounded-2xl flex items-center justify-center`}>
+                  <div className={`w-12 h-12 bg-gradient-to-r ${budgetRemaining >= 0 ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600'} rounded-2xl flex items-center justify-center`}>
                     <TrendingUp className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -281,13 +291,58 @@ export const BudgetPage: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white/70">Budget Used</p>
+                    <p className="text-sm font-medium text-white/70">Actual Expenses</p>
+                    <p className="text-2xl font-bold text-white">${actualExpenses.toLocaleString()}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                    <Receipt className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card glow>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/70">Total Vacation Cost</p>
+                    <p className="text-2xl font-bold text-white">${totalVacationCost.toLocaleString()}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Stats Row */}
+          <div className="animate-element grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card glow>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/70">Budget Usage</p>
                     <p className={`text-2xl font-bold ${budgetUsedPercentage >= 75 ? 'text-yellow-400' : 'text-white'}`}>
                       {budgetUsedPercentage.toFixed(1)}%
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
                     <PieChart className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card glow>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/70">Expense Items</p>
+                    <p className="text-2xl font-bold text-white">{currentBudget?.expenses.length || 0}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center">
+                    <Receipt className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
@@ -306,11 +361,11 @@ export const BudgetPage: React.FC = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {currentBudget.categories.map((category) => {
-                      const categorySpent = currentBudget.expenses
+                      const categoryExpenses = currentBudget.expenses
                         .filter(expense => expense.categoryId === category.id)
                         .reduce((sum, expense) => sum + expense.amount, 0);
                       
-                      if (categorySpent === 0) return null;
+                      if (categoryExpenses === 0) return null;
                       
                       return (
                         <div key={category.id} className="glass-card p-4 rounded-xl">
@@ -320,7 +375,7 @@ export const BudgetPage: React.FC = () => {
                               <span className="text-white font-medium">{category.name}</span>
                             </div>
                             <div className="text-right">
-                              <p className="text-lg font-bold text-white">${categorySpent.toLocaleString()}</p>
+                              <p className="text-lg font-bold text-white">${categoryExpenses.toLocaleString()}</p>
                               <p className="text-xs text-white/60">
                                 {currentBudget.expenses.filter(e => e.categoryId === category.id).length} expense{currentBudget.expenses.filter(e => e.categoryId === category.id).length !== 1 ? 's' : ''}
                               </p>
@@ -453,14 +508,27 @@ export const BudgetPage: React.FC = () => {
                           <p className="text-lg font-bold text-blue-400">${currentBudget.totalBudget.toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-white/60">Spent</p>
-                          <p className="text-lg font-bold text-red-400">${totalSpent.toLocaleString()}</p>
+                          <p className="text-sm text-white/60">Budget Used</p>
+                          <p className="text-lg font-bold text-red-400">${budgetSpent.toLocaleString()}</p>
                         </div>
                         <div>
                           <p className="text-sm text-white/60">Remaining</p>
-                          <p className={`text-lg font-bold ${remaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            ${remaining.toLocaleString()}
+                          <p className={`text-lg font-bold ${budgetRemaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            ${budgetRemaining.toLocaleString()}
                           </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="glass-card p-4 rounded-xl">
+                      <div className="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                          <p className="text-sm text-white/60">Actual Expenses</p>
+                          <p className="text-lg font-bold text-orange-400">${actualExpenses.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Total Cost</p>
+                          <p className="text-lg font-bold text-purple-400">${totalVacationCost.toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -470,10 +538,10 @@ export const BudgetPage: React.FC = () => {
                       {currentBudget.categories
                         .filter(cat => cat.allocated > 0)
                         .map((category) => {
-                          const categorySpent = currentBudget.expenses
+                          const categoryBudgetSpent = currentBudget.expenses
                             .filter(expense => expense.categoryId === category.id)
                             .reduce((sum, expense) => sum + expense.amount, 0);
-                          const percentage = (categorySpent / category.allocated) * 100;
+                          const percentage = (categoryBudgetSpent / category.allocated) * 100;
                           const status = percentage > 100 ? 'over' : percentage > 75 ? 'warning' : 'good';
                           
                           return (
