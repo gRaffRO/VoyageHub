@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import { forwardRef } from 'react';
 import { gsap } from 'gsap';
 
 interface CardProps {
@@ -53,19 +52,36 @@ export const Card: React.FC<CardProps> = ({
     <div
       ref={cardRef}
       className={`
+        glass-card rounded-2xl overflow-hidden
+        ${hover ? 'cursor-pointer' : ''}
+        ${glow ? 'pulse-glow' : ''}
+        ${className}
+      `.trim()}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const CardHeader: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className = '',
 }) => (
-  <div className={\`px-6 py-4 border-b border-white/10 ${className}`}>
+  <div className={`px-6 py-4 border-b border-white/10 ${className}`}>
     {children}
   </div>
 );
 
-    {children}
-  </div>
-);
+export const CardContent: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className = '',
+}) => {
+  return (
+    <div className={`px-6 py-4 ${className}`}>
+      {children}
+    </div>
+  );
+};
 
 export const CardFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
@@ -75,6 +91,3 @@ export const CardFooter: React.FC<{ children: React.ReactNode; className?: strin
     {children}
   </div>
 );
-      }
-  )
-}
