@@ -22,6 +22,7 @@ export const BudgetPage: React.FC = () => {
   const [selectedVacationId, setSelectedVacationId] = useState<string>('');
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'expenses' | 'budget'>('expenses');
   const [expenseForm, setExpenseForm] = useState<ExpenseFormData>({
     title: '',
     amount: 0,
@@ -122,27 +123,10 @@ export const BudgetPage: React.FC = () => {
       {/* Header */}
       <div className="animate-element flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Budget Tracking</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Financial Management</h1>
           <p className="text-white/70">
-            Monitor your vacation expenses and stay within budget
+            Track actual expenses and manage your vacation budget
           </p>
-        </div>
-        <div className="flex space-x-3 mt-4 sm:mt-0">
-          <Button
-            icon={Settings}
-            onClick={() => setIsBudgetModalOpen(true)}
-            variant="glass"
-          >
-            Set Budget
-          </Button>
-          <Button
-            icon={Plus}
-            onClick={() => setIsExpenseModalOpen(true)}
-            glow
-            disabled={!currentBudget}
-          >
-            Add Expense
-          </Button>
         </div>
       </div>
 
@@ -166,6 +150,64 @@ export const BudgetPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="animate-element">
+        <Card>
+          <CardContent className="p-0">
+            <div className="flex">
+              <button
+                onClick={() => setActiveTab('expenses')}
+                className={`flex-1 px-6 py-4 text-center font-medium transition-all ${
+                  activeTab === 'expenses'
+                    ? 'bg-blue-500/20 text-blue-300 border-b-2 border-blue-500'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                💳 Actual Expenses
+                <span className="block text-xs text-white/50 mt-1">
+                  Things you've already bought
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab('budget')}
+                className={`flex-1 px-6 py-4 text-center font-medium transition-all ${
+                  activeTab === 'budget'
+                    ? 'bg-green-500/20 text-green-300 border-b-2 border-green-500'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                📊 Budget Planning
+                <span className="block text-xs text-white/50 mt-1">
+                  How much you plan to spend
+                </span>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="animate-element flex justify-end space-x-3">
+        {activeTab === 'expenses' ? (
+          <Button
+            icon={Plus}
+            onClick={() => setIsExpenseModalOpen(true)}
+            glow
+            disabled={!currentBudget}
+          >
+            Add Expense
+          </Button>
+        ) : (
+          <Button
+            icon={Settings}
+            onClick={() => setIsBudgetModalOpen(true)}
+            variant="glass"
+          >
+            Set Budget
+          </Button>
+        )}
       </div>
 
       {currentBudget ? (
@@ -252,100 +294,211 @@ export const BudgetPage: React.FC = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Budget Categories */}
-            <div className="animate-element">
-              <Card glow>
-                <CardHeader>
-                  <h3 className="text-lg font-semibold text-white">Budget Categories</h3>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {currentBudget.categories.map((category) => {
-                    const categorySpent = currentBudget.expenses
-                      .filter(expense => expense.categoryId === category.id)
-                      .reduce((sum, expense) => sum + expense.amount, 0);
-                    const percentage = category.allocated > 0 ? (categorySpent / category.allocated) * 100 : 0;
-                    const isOverBudget = categorySpent > category.allocated;
-                    
-                    return (
-                      <div key={category.id} className="glass-card p-4 rounded-xl">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
-                            <span className="text-white font-medium">{category.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className={`text-sm font-medium ${isOverBudget ? 'text-red-400' : 'text-white'}`}>
-                              ${categorySpent.toLocaleString()} / ${category.allocated.toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-500 ${
-                              isOverBudget ? 'bg-red-500' : category.color
-                            }`}
-                            style={{ width: `${Math.min(percentage, 100)}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-white/60 mt-1">
-                          {percentage.toFixed(1)}% used
-                          {isOverBudget && (
-                            <span className="text-red-400 ml-2">Over budget!</span>
-                          )}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Expenses */}
-            <div className="animate-element">
-              <Card glow>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">Recent Expenses</h3>
-                  <Button variant="ghost" size="sm" icon={Receipt}>
-                    View All
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {currentBudget.expenses.length > 0 ? (
-                    currentBudget.expenses.slice(0, 6).map((expense) => {
-                      const category = currentBudget.categories.find(cat => cat.id === expense.categoryId);
+          {/* Tab Content */}
+          {activeTab === 'expenses' ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Expense Categories */}
+              <div className="animate-element">
+                <Card glow>
+                  <CardHeader>
+                    <h3 className="text-lg font-semibold text-white">💳 Actual Expenses by Category</h3>
+                    <p className="text-sm text-white/60">Money you've already spent</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {currentBudget.categories.map((category) => {
+                      const categorySpent = currentBudget.expenses
+                        .filter(expense => expense.categoryId === category.id)
+                        .reduce((sum, expense) => sum + expense.amount, 0);
+                      
+                      if (categorySpent === 0) return null;
                       
                       return (
-                        <div key={expense.id} className="glass-card p-4 rounded-xl hover-lift">
+                        <div key={category.id} className="glass-card p-4 rounded-xl">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                              <div className={`w-3 h-3 rounded-full ${category?.color || 'bg-gray-500'}`}></div>
-                              <div>
-                                <h4 className="font-medium text-white">{expense.title}</h4>
-                                <p className="text-sm text-white/60">{category?.name || 'Uncategorized'}</p>
-                                <p className="text-xs text-white/40">{new Date(expense.date).toLocaleDateString()}</p>
-                              </div>
+                              <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
+                              <span className="text-white font-medium">{category.name}</span>
                             </div>
                             <div className="text-right">
-                              <p className="text-lg font-bold text-white">${expense.amount.toLocaleString()}</p>
+                              <p className="text-lg font-bold text-white">${categorySpent.toLocaleString()}</p>
+                              <p className="text-xs text-white/60">
+                                {currentBudget.expenses.filter(e => e.categoryId === category.id).length} expense{currentBudget.expenses.filter(e => e.categoryId === category.id).length !== 1 ? 's' : ''}
+                              </p>
                             </div>
                           </div>
                         </div>
                       );
-                    })
-                  ) : (
-                    <div className="text-center py-8">
-                      <Receipt className="h-12 w-12 text-white/40 mx-auto mb-4" />
-                      <p className="text-white/60">No expenses yet</p>
-                      <p className="text-sm text-white/40 mt-2">
-                        Add your first expense to start tracking
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    })}
+                    {currentBudget.expenses.length === 0 && (
+                      <div className="text-center py-8">
+                        <Receipt className="h-12 w-12 text-white/40 mx-auto mb-4" />
+                        <p className="text-white/60">No expenses recorded yet</p>
+                        <p className="text-sm text-white/40 mt-2">
+                          Start adding your vacation expenses
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Expenses */}
+              <div className="animate-element">
+                <Card glow>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <h3 className="text-lg font-semibold text-white">Recent Purchases</h3>
+                    <Button variant="ghost" size="sm" icon={Receipt}>
+                      View All
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {currentBudget.expenses.length > 0 ? (
+                      currentBudget.expenses.slice(0, 6).map((expense) => {
+                        const category = currentBudget.categories.find(cat => cat.id === expense.categoryId);
+                        
+                        return (
+                          <div key={expense.id} className="glass-card p-4 rounded-xl hover-lift">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-3 h-3 rounded-full ${category?.color || 'bg-gray-500'}`}></div>
+                                <div>
+                                  <h4 className="font-medium text-white">{expense.title}</h4>
+                                  <p className="text-sm text-white/60">{category?.name || 'Uncategorized'}</p>
+                                  <p className="text-xs text-white/40">{new Date(expense.date).toLocaleDateString()}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-white">${expense.amount.toLocaleString()}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8">
+                        <Receipt className="h-12 w-12 text-white/40 mx-auto mb-4" />
+                        <p className="text-white/60">No expenses yet</p>
+                        <p className="text-sm text-white/40 mt-2">
+                          Add your first expense to start tracking
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Budget Categories */}
+              <div className="animate-element">
+                <Card glow>
+                  <CardHeader>
+                    <h3 className="text-lg font-semibold text-white">📊 Budget Allocation</h3>
+                    <p className="text-sm text-white/60">How much you plan to spend</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {currentBudget.categories.map((category) => {
+                      const categorySpent = currentBudget.expenses
+                        .filter(expense => expense.categoryId === category.id)
+                        .reduce((sum, expense) => sum + expense.amount, 0);
+                      const percentage = category.allocated > 0 ? (categorySpent / category.allocated) * 100 : 0;
+                      const isOverBudget = categorySpent > category.allocated;
+                      
+                      return (
+                        <div key={category.id} className="glass-card p-4 rounded-xl">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
+                              <span className="text-white font-medium">{category.name}</span>
+                            </div>
+                            <div className="text-right">
+                              <p className={`text-sm font-medium ${isOverBudget ? 'text-red-400' : 'text-white'}`}>
+                                ${categorySpent.toLocaleString()} / ${category.allocated.toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full transition-all duration-500 ${
+                                isOverBudget ? 'bg-red-500' : category.color
+                              }`}
+                              style={{ width: `${Math.min(percentage, 100)}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-white/60 mt-1">
+                            {percentage.toFixed(1)}% used
+                            {isOverBudget && (
+                              <span className="text-red-400 ml-2">Over budget!</span>
+                            )}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Budget vs Actual Comparison */}
+              <div className="animate-element">
+                <Card glow>
+                  <CardHeader>
+                    <h3 className="text-lg font-semibold text-white">Budget vs Actual</h3>
+                    <p className="text-sm text-white/60">How you're doing against your plan</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="glass-card p-4 rounded-xl">
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <p className="text-sm text-white/60">Planned</p>
+                          <p className="text-lg font-bold text-blue-400">${currentBudget.totalBudget.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Spent</p>
+                          <p className="text-lg font-bold text-red-400">${totalSpent.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Remaining</p>
+                          <p className={`text-lg font-bold ${remaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            ${remaining.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="text-white font-medium">Category Performance</h4>
+                      {currentBudget.categories
+                        .filter(cat => cat.allocated > 0)
+                        .map((category) => {
+                          const categorySpent = currentBudget.expenses
+                            .filter(expense => expense.categoryId === category.id)
+                            .reduce((sum, expense) => sum + expense.amount, 0);
+                          const percentage = (categorySpent / category.allocated) * 100;
+                          const status = percentage > 100 ? 'over' : percentage > 75 ? 'warning' : 'good';
+                          
+                          return (
+                            <div key={category.id} className="glass-card p-3 rounded-xl">
+                              <div className="flex items-center justify-between">
+                                <span className="text-white text-sm">{category.name}</span>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xs text-white/60">
+                                    {percentage.toFixed(0)}%
+                                  </span>
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    status === 'over' ? 'bg-red-500' :
+                                    status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                                  }`}></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <div className="animate-element text-center py-16">
@@ -353,14 +506,14 @@ export const BudgetPage: React.FC = () => {
             <DollarSign className="h-16 w-16 text-white/40 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-white mb-2">No Budget Set</h3>
             <p className="text-white/60 mb-6">
-              Set up your budget allocation to start tracking expenses
+              Set up your budget allocation to start financial planning
             </p>
             <Button
               icon={Settings}
               onClick={() => setIsBudgetModalOpen(true)}
               glow
             >
-              Set Budget
+              Create Budget Plan
             </Button>
           </div>
         </div>

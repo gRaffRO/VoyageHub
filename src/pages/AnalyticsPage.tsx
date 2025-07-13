@@ -116,9 +116,9 @@ export const AnalyticsPage: React.FC = () => {
     <div ref={pageRef} className="space-y-8 p-8">
       {/* Header */}
       <div className="animate-element">
-        <h1 className="text-3xl font-bold text-white mb-2">Travel Analytics</h1>
+        <h1 className="text-3xl font-bold text-white mb-2">Vacation Cost Analytics</h1>
         <p className="text-white/70">
-          Insights into your travel patterns and spending habits
+          Analyze your vacation costs and spending patterns
         </p>
       </div>
 
@@ -147,6 +147,96 @@ export const AnalyticsPage: React.FC = () => {
         ))}
       </div>
 
+      {/* Cost Breakdown */}
+      <div className="animate-element">
+        <Card glow>
+          <CardHeader>
+            <h3 className="text-lg font-semibold text-white">Vacation Cost Breakdown</h3>
+          </CardHeader>
+          <CardContent>
+            {vacations.length > 0 ? (
+              <div className="space-y-4">
+                {vacations.map((vacation) => {
+                  const vacationBudget = budgets[vacation.id];
+                  const vacationSpent = vacationBudget?.expenses.reduce((sum, exp) => sum + exp.amount, 0) || 0;
+                  const vacationPlanned = vacationBudget?.totalBudget || 0;
+                  const costPerDay = vacationSpent > 0 ? 
+                    vacationSpent / Math.ceil((new Date(vacation.endDate).getTime() - new Date(vacation.startDate).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                  
+                  return (
+                    <div key={vacation.id} className="glass-card p-4 rounded-xl">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-white">{vacation.title}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          vacation.status === 'completed' ? 'bg-green-500/20 text-green-300' :
+                          vacation.status === 'active' ? 'bg-blue-500/20 text-blue-300' :
+                          'bg-yellow-500/20 text-yellow-300'
+                        }`}>
+                          {vacation.status}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-white/60">Planned Budget</p>
+                          <p className="text-white font-medium">${vacationPlanned.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-white/60">Actual Spent</p>
+                          <p className="text-white font-medium">${vacationSpent.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-white/60">Cost per Day</p>
+                          <p className="text-white font-medium">${costPerDay.toFixed(0)}</p>
+                        </div>
+                        <div>
+                          <p className="text-white/60">Budget Usage</p>
+                          <p className={`font-medium ${
+                            vacationPlanned > 0 ? 
+                              (vacationSpent / vacationPlanned > 1 ? 'text-red-400' : 
+                               vacationSpent / vacationPlanned > 0.8 ? 'text-yellow-400' : 'text-green-400')
+                            : 'text-white'
+                          }`}>
+                            {vacationPlanned > 0 ? `${((vacationSpent / vacationPlanned) * 100).toFixed(1)}%` : 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {vacationBudget && vacationBudget.expenses.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-white/10">
+                          <p className="text-xs text-white/60 mb-2">Top Expense Categories:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {vacationBudget.categories
+                              .map(cat => ({
+                                ...cat,
+                                spent: vacationBudget.expenses
+                                  .filter(exp => exp.categoryId === cat.id)
+                                  .reduce((sum, exp) => sum + exp.amount, 0)
+                              }))
+                              .filter(cat => cat.spent > 0)
+                              .sort((a, b) => b.spent - a.spent)
+                              .slice(0, 3)
+                              .map(cat => (
+                                <span key={cat.id} className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
+                                  {cat.name}: ${cat.spent.toLocaleString()}
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <DollarSign className="h-12 w-12 text-white/40 mx-auto mb-4" />
+                <p className="text-white/60">No vacation cost data available</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Spending Trends */}
         <div className="animate-element">
