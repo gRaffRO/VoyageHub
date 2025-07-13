@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { AutocompleteInput } from '../ui/AutocompleteInput';
 import { useVacationStore } from '../../stores/vacationStore';
+import { countries, cities } from '../../data/locations';
 import { Plus, Calendar, MapPin, Users, Trash2, X } from 'lucide-react';
 import { gsap } from 'gsap';
 
@@ -286,49 +288,30 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
         </h4>
         
         <div className="space-y-4">
-          <Input
+          <AutocompleteInput
             label="Destination Name"
             value={newDestination.name}
-            onChange={(e) => setNewDestination(prev => ({ ...prev, name: e.target.value }))}
+            onChange={(value) => setNewDestination(prev => ({ ...prev, name: value }))}
+            suggestions={cities}
             placeholder="e.g., Paris City Center, Bali Beach Resort"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                if (newDestination.name && newDestination.country && newDestination.city) {
-                  addDestination();
-                }
-              }
-            }}
+            required
           />
           
           <div className="grid grid-cols-2 gap-4">
-            <Input
+            <AutocompleteInput
               label="Country"
               value={newDestination.country}
-              onChange={(e) => setNewDestination(prev => ({ ...prev, country: e.target.value }))}
+              onChange={(value) => setNewDestination(prev => ({ ...prev, country: value }))}
+              suggestions={countries}
               placeholder="e.g., France"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (newDestination.name && newDestination.country && newDestination.city) {
-                    addDestination();
-                  }
-                }
-              }}
+              required
             />
             <Input
               label="City"
               value={newDestination.city}
               onChange={(e) => setNewDestination(prev => ({ ...prev, city: e.target.value }))}
               placeholder="e.g., Paris"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (newDestination.name && newDestination.country && newDestination.city) {
-                    addDestination();
-                  }
-                }
-              }}
+              required
             />
           </div>
           
@@ -338,12 +321,16 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
               label="Arrival Date (Optional)"
               value={newDestination.startDate}
               onChange={(e) => setNewDestination(prev => ({ ...prev, startDate: e.target.value }))}
+              min={formData.startDate}
+              max={formData.endDate}
             />
             <Input
               type="date"
               label="Departure Date (Optional)"
               value={newDestination.endDate}
               onChange={(e) => setNewDestination(prev => ({ ...prev, endDate: e.target.value }))}
+              min={newDestination.startDate || formData.startDate}
+              max={formData.endDate}
             />
           </div>
           

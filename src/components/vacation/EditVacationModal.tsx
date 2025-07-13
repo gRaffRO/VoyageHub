@@ -3,8 +3,10 @@ import { Modal } from '../ui/Modal';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { AutocompleteInput } from '../ui/AutocompleteInput';
 import { useVacationStore } from '../../stores/vacationStore';
 import { Vacation } from '../../types';
+import { countries, cities } from '../../data/locations';
 import { Save, Calendar, MapPin, Users, Trash2, Plus } from 'lucide-react';
 import { gsap } from 'gsap';
 
