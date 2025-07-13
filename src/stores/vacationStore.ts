@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { VacationState, Vacation } from '../types';
 import { useAuthStore } from './authStore';
+import { useToastStore } from './toastStore';
 
 export const useVacationStore = create<VacationState>((set, get) => ({
   vacations: [],
@@ -62,8 +63,19 @@ export const useVacationStore = create<VacationState>((set, get) => ({
         vacations: [...state.vacations, newVacation],
         isLoading: false,
       }));
+      
+      useToastStore.getState().addToast({
+        type: 'success',
+        title: 'Vacation Created',
+        message: `"${newVacation.title}" has been added to your vacation list.`,
+      });
     } catch (error) {
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Create Vacation',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },
@@ -97,8 +109,19 @@ export const useVacationStore = create<VacationState>((set, get) => ({
           : state.currentVacation,
         isLoading: false,
       }));
+      
+      useToastStore.getState().addToast({
+        type: 'success',
+        title: 'Vacation Updated',
+        message: 'Your vacation details have been saved.',
+      });
     } catch (error) {
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Update Vacation',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },
@@ -145,10 +168,21 @@ export const useVacationStore = create<VacationState>((set, get) => ({
       console.log('✅ [VacationStore] Local state updated successfully');
       
       // Return success to indicate the operation completed
+      useToastStore.getState().addToast({
+        type: 'success',
+        title: 'Vacation Deleted',
+        message: 'Vacation and all associated data have been removed.',
+      });
+      
       return true;
     } catch (error) {
       console.error('❌ [VacationStore] Delete vacation error:', error);
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Delete Vacation',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },

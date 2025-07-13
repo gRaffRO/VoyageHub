@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
 import { useTaskStore } from './stores/taskStore';
+import { useToastStore } from './stores/toastStore';
 import { initializeSocket, disconnectSocket } from './utils/socket';
+import { ToastContainer } from './components/ui/ToastContainer';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { VacationsPage } from './pages/VacationsPage';
@@ -20,6 +22,7 @@ import { gsap } from 'gsap';
 function App() {
   const { isAuthenticated, isLoading, initializeAuth, token } = useAuthStore();
   const { handleRealTimeUpdate } = useTaskStore();
+  const { toasts, removeToast } = useToastStore();
   const appRef = useRef<HTMLDivElement>(null);
 
   console.log('🔄 [App] Component rendered with state:', {
@@ -147,6 +150,9 @@ function App() {
             </Routes>
           </main>
         </div>
+        
+        {/* Toast Container */}
+        <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       </div>
     </Router>
   );

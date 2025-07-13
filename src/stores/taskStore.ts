@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { TaskState, Task } from '../types';
 import { useAuthStore } from './authStore';
+import { useToastStore } from './toastStore';
 import { getSocket } from '../utils/socket';
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -57,8 +58,20 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         tasks: [...state.tasks, newTask],
         isLoading: false,
       }));
+      
+      // Show success toast
+      useToastStore.getState().addToast({
+        type: 'success',
+        title: 'Task Created',
+        message: `"${newTask.title}" has been added to your task list.`,
+      });
     } catch (error) {
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Create Task',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },
@@ -102,8 +115,28 @@ export const useTaskStore = create<TaskState>((set, get) => ({
           console.log('📡 [TaskStore] Emitted task update via socket');
         }
       }
+      
+      // Show success toast for status changes
+      if (data.status) {
+        const statusMessages = {
+          'pending': 'Task marked as pending',
+          'in-progress': 'Task started',
+          'completed': 'Task completed! 🎉'
+        };
+        
+        useToastStore.getState().addToast({
+          type: 'success',
+          title: 'Task Updated',
+          message: statusMessages[data.status as keyof typeof statusMessages] || 'Task updated successfully',
+        });
+      }
     } catch (error) {
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Update Task',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },
@@ -130,8 +163,19 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         tasks: state.tasks.filter(t => t.id !== id),
         isLoading: false,
       }));
+      
+      useToastStore.getState().addToast({
+        type: 'success',
+        title: 'Task Deleted',
+        message: 'Task has been removed from your list.',
+      });
     } catch (error) {
       set({ isLoading: false });
+      useToastStore.getState().addToast({
+        type: 'error',
+        title: 'Failed to Delete Task',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
       throw error;
     }
   },

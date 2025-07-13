@@ -4,6 +4,8 @@ import { useVacationStore } from '../stores/vacationStore';
 import { useTaskStore } from '../stores/taskStore';
 import { useBudgetStore } from '../stores/budgetStore';
 import { useDocumentStore } from '../stores/documentStore';
+import { CalendarView } from '../components/calendar/CalendarView';
+import { ActivityManager } from '../components/activities/ActivityManager';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { 
@@ -74,6 +76,59 @@ export const VacationDetailsPage: React.FC = () => {
   const totalSpent = currentBudget?.expenses.reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
   const pendingTasks = tasks.filter(t => t.status === 'pending').length;
+
+  // Mock activities data - in real app this would come from a store
+  const mockActivities = [
+    {
+      id: '1',
+      title: 'Visit Eiffel Tower',
+      description: 'Iconic landmark visit with photo opportunities',
+      date: vacation.startDate,
+      time: '10:00',
+      duration: 120,
+      cost: 25,
+      currency: 'EUR',
+      category: 'sightseeing' as const,
+      location: 'Champ de Mars, Paris',
+      bookingRequired: true,
+      confirmationNumber: 'ET123456',
+    },
+    {
+      id: '2',
+      title: 'Seine River Cruise',
+      description: 'Romantic evening cruise along the Seine',
+      date: vacation.startDate,
+      time: '19:00',
+      duration: 90,
+      cost: 45,
+      currency: 'EUR',
+      category: 'entertainment' as const,
+      location: 'Port de la Bourdonnais',
+      bookingRequired: true,
+    },
+  ];
+
+  // Convert tasks and activities to calendar events
+  const calendarEvents = [
+    ...tasks.map(task => ({
+      id: task.id,
+      title: task.title,
+      date: task.dueDate || vacation.startDate,
+      type: 'task' as const,
+      color: 'bg-blue-500/80 text-white',
+      description: task.description,
+    })),
+    ...mockActivities.map(activity => ({
+      id: activity.id,
+      title: activity.title,
+      date: activity.date,
+      time: activity.time,
+      type: 'activity' as const,
+      color: 'bg-green-500/80 text-white',
+      description: activity.description,
+      location: activity.location,
+    })),
+  ];
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -316,6 +371,41 @@ export const VacationDetailsPage: React.FC = () => {
           </Card>
         </div>
       )}
+
+      {/* Calendar View */}
+      <div className="animate-element">
+        <CalendarView
+          events={calendarEvents}
+          startDate={vacation.startDate}
+          endDate={vacation.endDate}
+          onEventClick={(event) => {
+            console.log('Event clicked:', event);
+          }}
+          onDateClick={(date) => {
+            console.log('Date clicked:', date);
+          }}
+          onAddEvent={(date) => {
+            console.log('Add event for date:', date);
+          }}
+        />
+      </div>
+
+      {/* Activity Manager */}
+      <div className="animate-element">
+        <ActivityManager
+          vacationId={vacation.id}
+          activities={mockActivities}
+          onActivityCreate={(activity) => {
+            console.log('Create activity:', activity);
+          }}
+          onActivityUpdate={(id, activity) => {
+            console.log('Update activity:', id, activity);
+          }}
+          onActivityDelete={(id) => {
+            console.log('Delete activity:', id);
+          }}
+        />
+      </div>
 
       {/* Quick Actions */}
       <div className="animate-element">
