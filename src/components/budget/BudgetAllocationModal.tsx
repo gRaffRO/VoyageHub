@@ -243,6 +243,32 @@ export const BudgetAllocationModal: React.FC<BudgetAllocationModalProps> = ({
           </div>
         </div>
 
+        <div className="form-element">
+          <h4 className="text-white font-medium mb-4">Budget Distribution Suggestions</h4>
+          <div className="glass-card p-4 rounded-xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <p className="text-white/70">Transportation</p>
+                <p className="text-white font-medium">25-35%</p>
+              </div>
+              <div>
+                <p className="text-white/70">Accommodation</p>
+                <p className="text-white font-medium">30-40%</p>
+              </div>
+              <div>
+                <p className="text-white/70">Food & Dining</p>
+                <p className="text-white font-medium">20-25%</p>
+              </div>
+              <div>
+                <p className="text-white/70">Activities</p>
+                <p className="text-white font-medium">10-15%</p>
+              </div>
+            </div>
+            <p className="text-xs text-white/50 mt-3">
+              💡 These are general guidelines. Adjust based on your travel style and preferences.
+            </p>
+          </div>
+        </div>
         <div className="form-element glass-card p-4 rounded-xl">
           <div className="flex justify-between items-center text-sm">
             <span className="text-white/70">Total Budget:</span>
