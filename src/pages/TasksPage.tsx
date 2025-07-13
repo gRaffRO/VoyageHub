@@ -523,6 +523,7 @@ export const TasksPage: React.FC = () => {
               label="Due Date (Optional)"
               value={taskForm.dueDate}
               onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}
+              min={new Date().toISOString().split('T')[0]}
             />
           </div>
           
@@ -584,6 +585,7 @@ export const TasksPage: React.FC = () => {
               label="Due Date (Optional)"
               value={taskForm.dueDate}
               onChange={(e) => setTaskForm(prev => ({ ...prev, dueDate: e.target.value }))}
+              min={new Date().toISOString().split('T')[0]}
             />
           </div>
           
