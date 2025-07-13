@@ -221,25 +221,82 @@ router.delete('/:id', (req: AuthRequest, res) => {
       
       console.log('✅ [Server] Found vacation to delete:', row.title);
       
-      // Delete the vacation
-      db.run(
-        'DELETE FROM vacations WHERE id = ? AND user_id = ?',
-        [req.params.id, req.user?.id],
-        function(deleteErr) {
-          if (deleteErr) {
-            console.error('❌ [Server] Error deleting vacation:', deleteErr);
-            return res.status(500).json({ error: 'Failed to delete vacation' });
-          }
-          
-          if (this.changes === 0) {
-            console.log('❌ [Server] No vacation was deleted');
-            return res.status(404).json({ error: 'Vacation not found or unauthorized' });
-          }
-          
-          console.log('✅ [Server] Vacation deleted successfully, changes:', this.changes);
-          res.json({ message: 'Vacation deleted successfully' });
+      // Delete related data first to avoid foreign key constraints
+      console.log('🔄 [Server] Deleting related data...');
+      
+      // Delete tasks first
+      db.run('DELETE FROM tasks WHERE vacation_id = ?', [req.params.id], (taskErr) => {
+        if (taskErr) {
+          console.error('❌ [Server] Error deleting tasks:', taskErr);
+        } else {
+          console.log('✅ [Server] Tasks deleted');
         }
-      );
+        
+        // Delete documents
+        db.run('DELETE FROM documents WHERE vacation_id = ?', [req.params.id], (docErr) => {
+          if (docErr) {
+            console.error('❌ [Server] Error deleting documents:', docErr);
+          } else {
+            console.log('✅ [Server] Documents deleted');
+          }
+          
+          // Delete budget and expenses
+          db.get('SELECT id FROM budgets WHERE vacation_id = ?', [req.params.id], (budgetErr, budgetRow: any) => {
+            if (budgetErr) {
+              console.error('❌ [Server] Error finding budget:', budgetErr);
+            }
+            
+            if (budgetRow) {
+              // Delete expenses first
+              db.run('DELETE FROM expenses WHERE budget_id = ?', [budgetRow.id], (expenseErr) => {
+                if (expenseErr) {
+                  console.error('❌ [Server] Error deleting expenses:', expenseErr);
+                } else {
+                  console.log('✅ [Server] Expenses deleted');
+                }
+                
+                // Delete budget
+                db.run('DELETE FROM budgets WHERE vacation_id = ?', [req.params.id], (budgetDelErr) => {
+                  if (budgetDelErr) {
+                    console.error('❌ [Server] Error deleting budget:', budgetDelErr);
+                  } else {
+                    console.log('✅ [Server] Budget deleted');
+                  }
+                  
+                  // Finally delete the vacation
+                  deleteVacationRecord();
+                });
+              });
+            } else {
+              console.log('ℹ️ [Server] No budget found for vacation');
+              // No budget found, proceed to delete vacation
+              deleteVacationRecord();
+            }
+          });
+        });
+      });
+      
+      function deleteVacationRecord() {
+        console.log('🔄 [Server] Deleting vacation record...');
+        db.run(
+          'DELETE FROM vacations WHERE id = ? AND user_id = ?',
+          [req.params.id, req.user?.id],
+          function(deleteErr) {
+            if (deleteErr) {
+              console.error('❌ [Server] Error deleting vacation:', deleteErr);
+              return res.status(500).json({ error: 'Failed to delete vacation: ' + deleteErr.message });
+            }
+            
+            if (this.changes === 0) {
+              console.log('❌ [Server] No vacation was deleted');
+              return res.status(404).json({ error: 'Vacation not found or unauthorized' });
+            }
+            
+            console.log('✅ [Server] Vacation deleted successfully, changes:', this.changes);
+            res.json({ message: 'Vacation deleted successfully' });
+          }
+        );
+      }
     }
   );
 });
