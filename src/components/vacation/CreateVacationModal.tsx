@@ -149,6 +149,8 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
   };
 
   const addCollaborator = () => {
+    console.log('🔄 [CreateVacationModal] addCollaborator called');
+    
     if (!newCollaboratorEmail) {
       setError('Please enter an email address');
       return;
@@ -165,9 +167,11 @@ export const CreateVacationModal: React.FC<CreateVacationModalProps> = ({
       return;
     }
 
+    console.log('✅ [CreateVacationModal] Adding collaborator:', newCollaboratorEmail);
     setCollaborators(prev => [...prev, newCollaboratorEmail]);
     setNewCollaboratorEmail('');
     setError('');
+    console.log('✅ [CreateVacationModal] Collaborator added successfully');
   };
 
   const removeCollaborator = (email: string) => {
