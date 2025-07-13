@@ -1,20 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useAuthStore } from '../../stores/authStore';
-import { useNotificationStore } from '../../stores/notificationStore';
+import { NotificationCenter } from '../notifications/NotificationCenter';
 import { Button } from '../ui/Button';
-import { Bell, User, Settings, LogOut, Plane, Camera } from 'lucide-react';
+import { User, Settings, LogOut, Plane, Camera } from 'lucide-react';
 import { gsap } from 'gsap';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
-  const { notifications, unreadCount, fetchNotifications, markAsRead } = useNotificationStore();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -24,15 +18,6 @@ export const Header: React.FC = () => {
       );
     }
   }, []);
-
-  const handleNotificationClick = async (notification: any) => {
-    if (!notification.read) {
-      await markAsRead(notification.id);
-    }
-    if (notification.actionUrl) {
-      window.location.href = notification.actionUrl;
-    }
-  };
 
   return (
     <header ref={headerRef} className="glass sticky top-0 z-40 border-b border-white/10">
@@ -50,52 +35,7 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                icon={Bell} 
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative"
-              >
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white pulse-glow">
-                    {unreadCount}
-                  </span>
-                )}
-              </Button>
-              
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 glass-card rounded-2xl shadow-lg z-50 max-h-96 overflow-y-auto">
-                  <div className="p-4 border-b border-white/10">
-                    <h3 className="text-lg font-semibold text-white">Notifications</h3>
-                  </div>
-                  <div className="p-2">
-                    {notifications.length > 0 ? (
-                      notifications.slice(0, 5).map((notification) => (
-                        <div
-                          key={notification.id}
-                          onClick={() => handleNotificationClick(notification)}
-                          className={`p-3 rounded-xl cursor-pointer transition-colors hover:bg-white/10 ${
-                            !notification.read ? 'bg-blue-500/10' : ''
-                          }`}
-                        >
-                          <h4 className="font-medium text-white text-sm">{notification.title}</h4>
-                          <p className="text-white/60 text-xs mt-1">{notification.message}</p>
-                          <p className="text-white/40 text-xs mt-1">
-                            {new Date(notification.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center">
-                        <p className="text-white/60">No notifications</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            <NotificationCenter />
             
             <Button variant="ghost" size="sm" icon={Settings} />
             
@@ -181,14 +121,6 @@ export const Header: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      {/* Click outside to close notifications */}
-      {showNotifications && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setShowNotifications(false)}
-        />
-      )}
       
       {/* Click outside to close user menu */}
       {showUserMenu && (

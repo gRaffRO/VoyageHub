@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../stores/authStore';
+import { useTheme } from '../components/theme/ThemeProvider';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
@@ -9,6 +10,7 @@ import { gsap } from 'gsap';
 export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const { user, updateProfile } = useAuthStore();
+  const { theme, accentColor, setTheme, setAccentColor } = useTheme();
   const [profileForm, setProfileForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -281,14 +283,20 @@ export const SettingsPage: React.FC = () => {
               <h4 className="text-lg font-medium text-white">Theme</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { name: 'Dark', description: 'Dark theme with blue accents', active: true },
-                  { name: 'Light', description: 'Light theme with clean design', active: false },
-                  { name: 'Auto', description: 'Follows system preference', active: false },
+                  { id: 'dark', name: 'Dark', description: 'Dark theme with blue accents' },
+                  { id: 'light', name: 'Light', description: 'Light theme with clean design' },
+                  { id: 'system', name: 'Auto', description: 'Follows system preference' },
                 ].map((theme, index) => (
-                  <div key={index} className={`glass-card p-4 rounded-xl cursor-pointer border-2 ${theme.active ? 'border-blue-500' : 'border-transparent'} hover:border-blue-400 transition-colors`}>
+                  <div 
+                    key={index} 
+                    onClick={() => setTheme(themeOption.id as any)}
+                    className={`glass-card p-4 rounded-xl cursor-pointer border-2 ${
+                      theme === themeOption.id ? 'border-blue-500' : 'border-transparent'
+                    } hover:border-blue-400 transition-colors`}
+                  >
                     <div className="w-full h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-3"></div>
-                    <h5 className="font-medium text-white">{theme.name}</h5>
-                    <p className="text-sm text-white/60">{theme.description}</p>
+                    <h5 className="font-medium text-white">{themeOption.name}</h5>
+                    <p className="text-sm text-white/60">{themeOption.description}</p>
                   </div>
                 ))}
               </div>
@@ -298,16 +306,19 @@ export const SettingsPage: React.FC = () => {
               <h4 className="text-lg font-medium text-white">Accent Color</h4>
               <div className="flex space-x-3">
                 {[
-                  'bg-blue-500',
-                  'bg-purple-500',
-                  'bg-green-500',
-                  'bg-red-500',
-                  'bg-yellow-500',
-                  'bg-pink-500',
+                  { id: 'blue', class: 'bg-blue-500' },
+                  { id: 'purple', class: 'bg-purple-500' },
+                  { id: 'green', class: 'bg-green-500' },
+                  { id: 'red', class: 'bg-red-500' },
+                  { id: 'yellow', class: 'bg-yellow-500' },
+                  { id: 'pink', class: 'bg-pink-500' },
                 ].map((color, index) => (
                   <button
                     key={index}
-                    className={`w-10 h-10 ${color} rounded-full border-2 ${index === 0 ? 'border-white' : 'border-transparent'} hover:scale-110 transition-transform`}
+                    onClick={() => setAccentColor(color.id as any)}
+                    className={`w-10 h-10 ${color.class} rounded-full border-2 ${
+                      accentColor === color.id ? 'border-white' : 'border-transparent'
+                    } hover:scale-110 transition-transform`}
                   />
                 ))}
               </div>

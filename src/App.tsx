@@ -4,6 +4,7 @@ import { useAuthStore } from './stores/authStore';
 import { useTaskStore } from './stores/taskStore';
 import { useToastStore } from './stores/toastStore';
 import { initializeSocket, disconnectSocket } from './utils/socket';
+import { ThemeProvider } from './components/theme/ThemeProvider';
 import { ToastContainer } from './components/ui/ToastContainer';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -107,6 +108,7 @@ function App() {
     });
     
     return (
+      <ThemeProvider>
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-card p-8 rounded-3xl text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -117,6 +119,7 @@ function App() {
             Loading: {isLoading ? 'true' : 'false'}
           </div>
         </div>
+      </ThemeProvider>
       </div>
     );
   }
@@ -124,12 +127,17 @@ function App() {
   // Show auth page if not authenticated
   if (isAuthenticated === false) {
     console.log('🔐 [App] User not authenticated, showing auth page');
-    return <AuthPage />;
+    return (
+      <ThemeProvider>
+        <AuthPage />
+      </ThemeProvider>
+    );
   }
 
   // Show main app if authenticated
   console.log('🏠 [App] User authenticated, showing main application');
   return (
+    <ThemeProvider>
     <Router>
       <div ref={appRef} className="min-h-screen">
         <Header />
@@ -155,6 +163,7 @@ function App() {
         <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       </div>
     </Router>
+    </ThemeProvider>
   );
 }
 

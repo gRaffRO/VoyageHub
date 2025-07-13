@@ -6,6 +6,7 @@ import { useBudgetStore } from '../stores/budgetStore';
 import { useDocumentStore } from '../stores/documentStore';
 import { CalendarView } from '../components/calendar/CalendarView';
 import { ActivityManager } from '../components/activities/ActivityManager';
+import { InteractiveMap } from '../components/maps/InteractiveMap';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { 
@@ -107,6 +108,16 @@ export const VacationDetailsPage: React.FC = () => {
       bookingRequired: true,
     },
   ];
+
+  // Convert destinations to map locations
+  const mapLocations = vacation.destinations.map((dest, index) => ({
+    id: dest.id,
+    name: dest.name,
+    coordinates: dest.coordinates,
+    type: 'destination' as const,
+    color: 'bg-blue-500',
+    description: `${dest.city}, ${dest.country}`,
+  }));
 
   // Convert tasks and activities to calendar events
   const calendarEvents = [
@@ -242,6 +253,19 @@ export const VacationDetailsPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Interactive Map */}
+      {mapLocations.length > 0 && (
+        <div className="animate-element">
+          <InteractiveMap
+            locations={mapLocations}
+            showRoute={true}
+            onLocationClick={(location) => {
+              console.log('Location clicked:', location);
+            }}
+          />
+        </div>
+      )}
 
       {/* Dates and Destinations */}
       <div className="animate-element grid grid-cols-1 lg:grid-cols-2 gap-8">
