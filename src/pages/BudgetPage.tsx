@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { DatePicker } from '../ui/DatePicker';
+import { DatePicker } from '../components/ui/DatePicker';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
 import { BudgetAllocationModal } from '../components/budget/BudgetAllocationModal';
@@ -301,7 +301,10 @@ export const BudgetPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-            
+          </div>
+
+          {/* Additional Stats Row */}
+          <div className="animate-element grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card glow>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -315,10 +318,7 @@ export const BudgetPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Additional Stats Row */}
-          <div className="animate-element grid grid-cols-1 md:grid-cols-2 gap-6">
+            
             <Card glow>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -330,20 +330,6 @@ export const BudgetPage: React.FC = () => {
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
                     <PieChart className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card glow>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-white/70">Expense Items</p>
-                    <p className="text-2xl font-bold text-white">{currentBudget?.expenses.length || 0}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center">
-                    <Receipt className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
@@ -636,10 +622,11 @@ export const BudgetPage: React.FC = () => {
               </select>
             </div>
           </div>
+          
           <DatePicker
             label="Date"
             value={expenseForm.date}
-            onChange={(e) => setExpenseForm(prev => ({ ...prev, date: e.target.value }))}
+            onChange={(date) => setExpenseForm(prev => ({ ...prev, date }))}
             required
           />
           
@@ -654,7 +641,8 @@ export const BudgetPage: React.FC = () => {
             />
           </div>
           
-          <DatePicker
+          <div className="flex space-x-3 pt-4">
+            <Button type="button" variant="ghost" onClick={() => setIsExpenseModalOpen(false)} className="flex-1">
               Cancel
             </Button>
             <Button type="submit" icon={Plus} glow className="flex-1" disabled={isLoading}>
