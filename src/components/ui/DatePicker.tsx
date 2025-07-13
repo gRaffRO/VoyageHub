@@ -39,6 +39,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   useEffect(() => {
     if (isOpen && dropdownRef.current) {
+      console.log('DatePicker opened, animating...');
       gsap.fromTo(dropdownRef.current,
         { opacity: 0, y: -10, scale: 0.95 },
         { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(1.7)" }
@@ -57,15 +58,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      // Prevent body scroll when picker is open
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -132,6 +128,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     if (isDateDisabled(date)) return;
     
     const dateString = date.toISOString().split('T')[0]; 
+    console.log('Date selected:', dateString);
     onChange(dateString);
     setIsOpen(false);
   };
@@ -159,16 +156,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return '';
-    console.log('Formatting date:', dateString);
     const date = new Date(dateString);
-    const formatted = date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
-    console.log('Formatted result:', formatted);
-    return formatted;
   };
 
   const generateYearOptions = () => {
@@ -184,6 +178,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long' });
   const currentYear = currentMonth.getFullYear();
 
+  console.log('DatePicker render:', { isOpen, value, placeholder });
+
   return (
     <div className={`relative ${className}`}>
       {label && (
@@ -195,7 +191,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       
       <div
         ref={inputRef}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('Input clicked, opening picker');
+          setIsOpen(!isOpen);
+        }}
         className="relative cursor-pointer"
       >
         <div className="glass-input block w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-300 hover:bg-white/15">
@@ -212,22 +211,17 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       </div>
 
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998]" />
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
           
           {/* Date Picker */}
           <div
             ref={dropdownRef}
-            className="fixed z-[9999] mt-2 w-80 glass-card rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
-            style={{
-              top: inputRef.current ? inputRef.current.getBoundingClientRect().bottom + 8 : '50%',
-              left: inputRef.current ? Math.max(16, Math.min(
-                inputRef.current.getBoundingClientRect().left,
-                window.innerWidth - 320 - 16
-              )) : '50%',
-              transform: !inputRef.current ? 'translate(-50%, -50%)' : 'none'
-            }}
+            className="relative z-10 w-full max-w-sm glass-card rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600/30 to-purple-600/30 p-4 border-b border-white/10 backdrop-blur-sm">
@@ -263,7 +257,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               
               {/* Year Picker */}
               {showYearPicker && (
-                <div className="absolute top-full left-0 right-0 bg-black/90 backdrop-blur-md border border-white/20 rounded-xl mt-1 max-h-48 overflow-y-auto z-10">
+                <div className="absolute top-full left-0 right-0 bg-black/90 backdrop-blur-md border border-white/20 rounded-xl mt-1 max-h-48 overflow-y-auto z-20">
                   <div className="grid grid-cols-4 gap-1 p-2">
                     {generateYearOptions().map((year) => (
                       <button
@@ -308,7 +302,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                     onClick={() => handleDateClick(date)}
                     disabled={disabled}
                     className={`
-                      relative h-10 w-10 rounded-xl text-sm font-medium transition-all duration-200 z-10
+                      relative h-10 w-10 rounded-xl text-sm font-medium transition-all duration-200
                       ${!isCurrentMonth 
                         ? 'text-white/30 hover:text-white/50' 
                         : disabled
@@ -357,7 +351,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
