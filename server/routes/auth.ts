@@ -27,11 +27,18 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    const db = Database.getInstance();
+    let db;
+    try {
+      db = Database.getInstance();
+    } catch (error) {
+      console.error('Database connection error:', error);
+      return res.status(500).json({ error: 'Database connection failed' });
+    }
     
     // Check if user already exists
     db.get('SELECT id FROM users WHERE email = ?', [email], async (err, row) => {
       if (err) {
+        console.error('Database query error:', err);
         return res.status(500).json({ error: 'Database error' });
       }
       
@@ -49,6 +56,7 @@ router.post('/register', async (req, res) => {
         [userId, email, passwordHash, firstName, lastName],
         function(err) {
           if (err) {
+            console.error('Database insert error:', err);
             return res.status(500).json({ error: 'Failed to create user' });
           }
 
@@ -84,6 +92,7 @@ router.post('/register', async (req, res) => {
       );
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -97,13 +106,20 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const db = Database.getInstance();
+    let db;
+    try {
+      db = Database.getInstance();
+    } catch (error) {
+      console.error('Database connection error:', error);
+      return res.status(500).json({ error: 'Database connection failed' });
+    }
     
     db.get(
       'SELECT id, email, password_hash, first_name, last_name, avatar, preferences FROM users WHERE email = ?',
       [email],
       async (err, row: any) => {
         if (err) {
+          console.error('Database query error:', err);
           return res.status(500).json({ error: 'Database error' });
         }
         
@@ -139,19 +155,27 @@ router.post('/login', async (req, res) => {
       }
     );
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 // Get profile
 router.get('/profile', authenticateToken, (req: AuthRequest, res) => {
-  const db = Database.getInstance();
+  let db;
+  try {
+    db = Database.getInstance();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return res.status(500).json({ error: 'Database connection failed' });
+  }
   
   db.get(
     'SELECT id, email, first_name, last_name, avatar, preferences, created_at, updated_at FROM users WHERE id = ?',
     [req.user?.id],
     (err, row: any) => {
       if (err) {
+        console.error('Database query error:', err);
         return res.status(500).json({ error: 'Database error' });
       }
       
@@ -178,13 +202,20 @@ router.get('/profile', authenticateToken, (req: AuthRequest, res) => {
 // Update profile
 router.patch('/profile', authenticateToken, (req: AuthRequest, res) => {
   const { firstName, lastName, avatar, preferences } = req.body;
-  const db = Database.getInstance();
+  let db;
+  try {
+    db = Database.getInstance();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return res.status(500).json({ error: 'Database connection failed' });
+  }
   
   db.run(
     'UPDATE users SET first_name = ?, last_name = ?, avatar = ?, preferences = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
     [firstName, lastName, avatar, JSON.stringify(preferences), req.user?.id],
     function(err) {
       if (err) {
+        console.error('Database update error:', err);
         return res.status(500).json({ error: 'Failed to update profile' });
       }
       

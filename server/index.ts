@@ -25,9 +25,58 @@ const io = new Server(server, {
     ].filter(Boolean),
     methods: ["GET", "POST"]
   }
-});
-
-// Initialize database
+// Initialize database with proper error handling
+async function initializeApp() {
+  try {
+    await Database.initialize();
+    console.log('Database initialized successfully');
+    
+    // Routes
+    app.use('/api/auth', authRoutes);
+    app.use('/api/vacations', vacationRoutes);
+    app.use('/api/tasks', taskRoutes);
+    app.use('/api/budget', budgetRoutes);
+    app.use('/api/documents', documentRoutes);
+    app.use('/api/notifications', notificationRoutes);
+    
+    // Health check
+    app.get('/health', (req, res) => {
+      res.json({ status: 'OK', timestamp: new Date().toISOString() });
+    });
+    
+    // Socket.IO connection handling
+    io.on('connection', (socket) => {
+      console.log('User connected:', socket.id);
+      
+      socket.on('join-vacation', (vacationId) => {
+        socket.join(`vacation-${vacationId}`);
+        console.log(`User ${socket.id} joined vacation ${vacationId}`);
+      });
+      
+      socket.on('leave-vacation', (vacationId) => {
+        socket.leave(`vacation-${vacationId}`);
+        console.log(`User ${socket.id} left vacation ${vacationId}`);
+      });
+      
+      socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+      });
+    });
+    
+    // Start server
+    server.listen(PORT, () => {
+      console.log('\n🚀 VoyageHub API Server');
+      console.log(`📡 Running on: http://localhost:${PORT}`);
+      console.log('🌐 Frontend: http://localhost:5173');
+      console.log(`📊 Health: http://localhost:${PORT}/health`);
+      console.log('⚡ Ready for connections!\n');
+    });
+    
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+    process.exit(1);
+  }
+}
 try {
   Database.initialize();
   console.log('Database initialized successfully');
@@ -98,46 +147,8 @@ io.use((socket, next) => {
   // TODO: Verify JWT token
   next();
 });
-
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-  
-  socket.on('join-vacation', (vacationId) => {
-    socket.join(`vacation-${vacationId}`);
-  });
-  
-  socket.on('leave-vacation', (vacationId) => {
-    socket.leave(`vacation-${vacationId}`);
-  });
-  
-  socket.on('task-update', (data) => {
-    socket.to(`vacation-${data.vacationId}`).emit('task-updated', data);
-  });
-  
-  socket.on('budget-update', (data) => {
-    socket.to(`vacation-${data.vacationId}`).emit('budget-updated', data);
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
-
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
-
-const PORT = process.env.PORT || 3001;
-
-server.listen(PORT, () => {
-  console.log(`\n🚀 VoyageHub API Server`);
-  console.log(`📡 Running on: http://localhost:${PORT}`);
-  console.log(`🌐 Frontend: http://localhost:5173`);
-  console.log(`📊 Health: http://localhost:${PORT}/health`);
-  console.log(`⚡ Ready for connections!\n`);
-});
+// Initialize the application
+initializeApp();
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
