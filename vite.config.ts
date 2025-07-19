@@ -7,7 +7,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: false,
-    open: true,
+    open: false,
     cors: true,
     proxy: {
       '/api': {
@@ -25,16 +25,6 @@ export default defineConfig({
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log(`✅ [Vite] ${proxyRes.statusCode} for ${req.method} ${req.url}`);
           });
-        },
-      },
-      // Catch-all for non-API routes to serve the React app
-      '^(?!/api).*': {
-        target: 'http://localhost:5173',
-        changeOrigin: false,
-        bypass: function (req, res, proxyOptions) {
-          if (req.headers.accept && req.headers.accept.indexOf('html') !== -1) {
-            return '/index.html';
-          }
         },
       },
     },

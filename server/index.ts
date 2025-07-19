@@ -75,17 +75,6 @@ app.get('/health', (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  // Check if this is an API request or browser request
-  const isApiRequest = req.headers.accept && req.headers.accept.includes('application/json');
-  const userAgent = req.headers['user-agent'] || '';
-  const isBrowser = userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari');
-  
-  // If it's a browser request, redirect to frontend
-  if (isBrowser && !isApiRequest) {
-    return res.redirect(process.env.CLIENT_URL || 'http://localhost:5173');
-  }
-  
-  // Otherwise, return API info
   res.json({
     message: 'VoyageHub API Server',
     version: '1.0.0',
