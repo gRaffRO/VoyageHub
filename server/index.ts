@@ -25,6 +25,8 @@ const io = new Server(server, {
     ].filter(Boolean),
     methods: ["GET", "POST"]
   }
+}
+)
 // Initialize database with proper error handling
 async function initializeApp() {
   try {
