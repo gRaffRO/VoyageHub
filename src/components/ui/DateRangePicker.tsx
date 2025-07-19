@@ -267,7 +267,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           {/* Date Range Picker */}
           <div
             ref={dropdownRef}
-            className="fixed z-[9999] mt-2 w-80 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/30 overflow-hidden"
+            className="fixed z-[9999] mt-2 w-80 glass-card rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
             style={{
               top: inputRef.current ? inputRef.current.getBoundingClientRect().bottom + 8 : '50%',
               left: inputRef.current ? Math.max(16, Math.min(
@@ -278,7 +278,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             }}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 p-4 border-b border-white/20 backdrop-blur-sm">
+            <div className="bg-gradient-to-r from-blue-600/30 to-purple-600/30 p-4 border-b border-white/10 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <button
                   type="button"
@@ -315,7 +315,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               
               {/* Year Picker */}
               {showYearPicker && (
-                <div className="absolute top-full left-0 right-0 bg-gray-900/98 backdrop-blur-xl border border-white/30 rounded-xl mt-1 max-h-48 overflow-y-auto z-10 shadow-xl">
+                <div className="absolute top-full left-0 right-0 bg-black/90 backdrop-blur-md border border-white/20 rounded-xl mt-1 max-h-48 overflow-y-auto z-10">
                   <div className="grid grid-cols-4 gap-1 p-2">
                     {generateYearOptions().map((year) => (
                       <button
@@ -337,16 +337,16 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             </div>
 
             {/* Days of week */}
-            <div className="grid grid-cols-7 gap-1 p-4 pb-2 bg-gray-800/60">
+            <div className="grid grid-cols-7 gap-1 p-4 pb-2 bg-white/5">
               {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-                <div key={day} className="text-center text-xs font-semibold text-white/80 py-2">
+                <div key={day} className="text-center text-xs font-semibold text-white/60 py-2">
                   {day}
                 </div>
               ))}
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 gap-1 p-4 pt-0 bg-gray-800/60">
+            <div className="grid grid-cols-7 gap-1 p-4 pt-0 bg-white/5">
               {days.map((dayInfo, index) => {
                 const { date, isCurrentMonth } = dayInfo;
                 const disabled = isDateDisabled(date);
@@ -367,24 +367,24 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                     className={`
                       relative h-10 w-10 rounded-xl text-sm font-medium transition-all duration-200 z-10
                       ${!isCurrentMonth 
-                        ? 'text-white/40 hover:text-white/60' 
+                        ? 'text-white/30 hover:text-white/50' 
                         : disabled
-                          ? 'text-white/40 cursor-not-allowed'
+                          ? 'text-white/30 cursor-not-allowed'
                           : rangeStart || rangeEnd
-                            ? 'bg-blue-500 text-white shadow-lg scale-105 ring-2 ring-blue-400/70 font-bold'
+                            ? 'bg-blue-500 text-white shadow-lg scale-105 ring-2 ring-blue-400/50'
                             : inRange
-                              ? 'bg-blue-500/60 text-white'
+                              ? 'bg-blue-500/30 text-white'
                               : inHoverRange
-                                ? 'bg-blue-500/40 text-white'
+                                ? 'bg-blue-500/20 text-white'
                                 : today
-                                  ? 'bg-gradient-to-br from-blue-500/60 to-purple-500/60 text-white ring-1 ring-blue-400/70 font-semibold'
-                                  : 'text-white hover:bg-white/20 hover:scale-105'
+                                  ? 'bg-gradient-to-br from-blue-500/30 to-purple-500/30 text-white ring-1 ring-blue-400/50'
+                                  : 'text-white hover:bg-white/10 hover:scale-105'
                       }
                     `}
                   >
                     {date.getDate()}
                     {today && !inRange && (
-                      <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                      <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full"></div>
                     )}
                   </button>
                 );
@@ -392,7 +392,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/20 bg-gray-800/60 backdrop-blur-sm">
+            <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex justify-between items-center">
                 <button
                   type="button"
@@ -401,11 +401,11 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                     setSelectingEnd(false);
                     setIsOpen(false);
                   }}
-                  className="text-sm text-white/80 hover:text-white transition-colors font-medium"
+                  className="text-sm text-white/60 hover:text-white transition-colors font-medium"
                 >
                   Clear
                 </button>
-                <div className="text-xs text-white/70">
+                <div className="text-xs text-white/50">
                   {value.startDate && value.endDate && (
                     <>
                       {Math.ceil((new Date(value.endDate).getTime() - new Date(value.startDate).getTime()) / (1000 * 60 * 60 * 24))} days
